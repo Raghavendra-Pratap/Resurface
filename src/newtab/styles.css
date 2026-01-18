@@ -61,41 +61,40 @@ body {
   max-width: 680px;
 }
 
-/* Logo */
-.newtab-logo {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 48px;
-}
-
-.newtab-logo-icon {
-  width: 48px;
-  height: 48px;
-  background: var(--accent);
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 32px var(--accent-glow);
-}
-
-.newtab-logo-icon svg {
-  width: 26px;
-  height: 26px;
-  stroke: white;
-}
-
-.newtab-logo-text {
-  font-size: 28px;
-  font-weight: 600;
-  letter-spacing: -0.5px;
-}
-
 /* Search Wrapper */
 .newtab-search-wrapper {
   width: 100%;
   position: relative;
+}
+
+/* Logo above search box */
+.newtab-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  justify-content: center;
+}
+
+.newtab-logo-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.newtab-logo-icon svg {
+  width: 40px;
+  height: 40px;
+}
+
+.newtab-logo-text {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
 }
 
 /* Search Box */
@@ -178,6 +177,7 @@ body {
   bottom: calc(100% + 8px);
   left: 0;
   right: 0;
+  margin-bottom: 8px;
   background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: 16px;

@@ -74,24 +74,24 @@ export async function initStorage(): Promise<void> {
       
       // Create stores if they don't exist (fresh install or upgrade)
       if (!database.objectStoreNames.contains('savedItems')) {
-        const itemsStore = database.createObjectStore('savedItems', { keyPath: 'id' });
-        itemsStore.createIndex('by-url', 'url');
-        itemsStore.createIndex('by-savedAt', 'savedAt');
-        itemsStore.createIndex('by-searchText', 'searchText');
+      const itemsStore = database.createObjectStore('savedItems', { keyPath: 'id' });
+      itemsStore.createIndex('by-url', 'url');
+      itemsStore.createIndex('by-savedAt', 'savedAt');
+      itemsStore.createIndex('by-searchText', 'searchText');
       }
       
       if (!database.objectStoreNames.contains('topics')) {
-        const topicsStore = database.createObjectStore('topics', { keyPath: 'id' });
-        topicsStore.createIndex('by-name', 'name');
+      const topicsStore = database.createObjectStore('topics', { keyPath: 'id' });
+      topicsStore.createIndex('by-name', 'name');
       }
       
       if (!database.objectStoreNames.contains('intents')) {
-        const intentsStore = database.createObjectStore('intents', { keyPath: 'id' });
-        intentsStore.createIndex('by-name', 'name');
+      const intentsStore = database.createObjectStore('intents', { keyPath: 'id' });
+      intentsStore.createIndex('by-name', 'name');
       }
       
       if (!database.objectStoreNames.contains('settings')) {
-        database.createObjectStore('settings', { keyPath: 'id' });
+      database.createObjectStore('settings', { keyPath: 'id' });
       }
       
       // Future schema migrations go here:
