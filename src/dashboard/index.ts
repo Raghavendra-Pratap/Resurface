@@ -68,11 +68,11 @@ function renderSidebar() {
   const topicsList = document.getElementById('topics-list')!;
   topicsList.innerHTML = state.topics.map(topic => `
     <div class="nav-item-wrapper" data-topic-id="${topic.id}">
-      <button class="nav-item" data-filter-type="topic" data-filter-id="${topic.id}">
-        <span class="nav-color-dot" style="background: ${topic.color};"></span>
-        <span>${escapeHtml(topic.name)}</span>
-        <span class="nav-count">${topic.itemCount}</span>
-      </button>
+    <button class="nav-item" data-filter-type="topic" data-filter-id="${topic.id}">
+      <span class="nav-color-dot" style="background: ${topic.color};"></span>
+      <span>${escapeHtml(topic.name)}</span>
+      <span class="nav-count">${topic.itemCount}</span>
+    </button>
       <div class="nav-item-actions">
         <button class="nav-action-btn edit" data-action="edit-topic" title="Edit">
           <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -88,11 +88,11 @@ function renderSidebar() {
   const intentsList = document.getElementById('intents-list')!;
   intentsList.innerHTML = state.intents.map(intent => `
     <div class="nav-item-wrapper" data-intent-id="${intent.id}">
-      <button class="nav-item" data-filter-type="intent" data-filter-id="${intent.id}">
-        <span>${intent.emoji}</span>
-        <span>${escapeHtml(intent.name)}</span>
-        <span class="nav-count">${intent.itemCount}</span>
-      </button>
+    <button class="nav-item" data-filter-type="intent" data-filter-id="${intent.id}">
+      <span>${intent.emoji}</span>
+      <span>${escapeHtml(intent.name)}</span>
+      <span class="nav-count">${intent.itemCount}</span>
+    </button>
       <div class="nav-item-actions">
         <button class="nav-action-btn edit" data-action="edit-intent" title="Edit">
           <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
