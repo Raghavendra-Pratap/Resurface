@@ -10,10 +10,13 @@
 </head>
 <body>
   <div class="newtab-container">
+    <!-- Background gradient -->
+    <div class="newtab-bg"></div>
+    
     <!-- Main content -->
     <div class="newtab-content">
       <!-- Logo -->
-      <div class="newtab-logo" id="newtab-logo">
+      <div class="newtab-logo">
         <div class="newtab-logo-icon">
           <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -97,10 +100,9 @@
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Quick Links (Google Apps) -->
-    <div class="newtab-quick-links" id="quick-links">
+      
+      <!-- Quick Links (Google Apps) -->
+      <div class="newtab-quick-links" id="quick-links">
         <a href="https://gemini.google.com" class="newtab-quick-link" title="Gemini">
           <div class="newtab-quick-icon gemini">
             <svg viewBox="0 0 24 24">
@@ -192,11 +194,28 @@
           </div>
           <span>Translate</span>
         </a>
-    </div>
+      </div>
 
+      <!-- Quick stats -->
+      <div class="newtab-stats" id="stats">
+        <div class="newtab-stat">
+          <span class="newtab-stat-value" id="stat-total">0</span>
+          <span class="newtab-stat-label">saved pages</span>
+        </div>
+        <div class="newtab-stat-divider"></div>
+        <div class="newtab-stat">
+          <span class="newtab-stat-value" id="stat-topics">0</span>
+          <span class="newtab-stat-label">topics</span>
+        </div>
+        <div class="newtab-stat-divider"></div>
+        <a href="#" id="open-dashboard" class="newtab-stat newtab-stat-link">
+          <span class="newtab-stat-label">Open Dashboard →</span>
+        </a>
+      </div>
+    </div>
+    
     <!-- Keyboard hints -->
     <div class="newtab-hints">
-      <button id="open-dashboard-btn" class="newtab-dashboard-btn">Open Dashboard</button>
       <span><kbd>⌘</kbd><kbd>⇧</kbd><kbd>S</kbd> Save current tab</span>
       <span><kbd>⌘</kbd><kbd>⇧</kbd><kbd>F</kbd> Search saved tabs</span>
     </div>
