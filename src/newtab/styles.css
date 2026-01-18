@@ -195,7 +195,7 @@ body {
 /* History Tray (above search) */
 .newtab-history-tray {
   position: absolute;
-  bottom: calc(50vh + 45px); /* Position above search box (search box center is at 50vh, box is ~80px tall) */
+  bottom: calc(50vh + 42px); /* Position very close above search box (search box center is at 50vh, box is ~80px tall) */
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -210,7 +210,7 @@ body {
   pointer-events: none;
   transition: opacity 0.2s, transform 0.2s;
   z-index: 2; /* Can overlap logo (z-index 1) */
-  max-height: 400px; /* Will be set dynamically by JS */
+  max-height: 450px; /* Increased to show more content */
   min-height: 200px;
   display: flex;
   flex-direction: column;
@@ -324,7 +324,7 @@ body {
 /* Results Tray (below search) */
 .newtab-results-tray {
   position: absolute;
-  top: calc(50vh + 45px); /* Position below search box (search box center is at 50vh, box is ~80px tall) */
+  top: calc(50vh + 42px); /* Position very close below search box (search box center is at 50vh, box is ~80px tall) */
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -341,7 +341,7 @@ body {
   pointer-events: none;
   transition: opacity 0.2s, transform 0.2s;
   z-index: 2; /* Can overlap shortcuts (z-index 1) */
-  max-height: 400px; /* Will be set dynamically by JS */
+  max-height: 450px; /* Increased to show more content */
   min-height: 200px;
   display: flex;
   flex-direction: column;
