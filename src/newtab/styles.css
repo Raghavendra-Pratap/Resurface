@@ -70,9 +70,8 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 32px;
   position: absolute;
-  top: 40px;
+  top: 60px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
@@ -208,7 +207,7 @@ body {
   transform: translateY(8px);
   pointer-events: none;
   transition: opacity 0.2s, transform 0.2s;
-  z-index: 4;
+  z-index: 2; /* Can overlap logo (z-index 1) */
   max-height: 400px; /* Will be set dynamically by JS */
   min-height: 200px;
   display: flex;
@@ -337,7 +336,7 @@ body {
   transform: translateY(-8px);
   pointer-events: none;
   transition: opacity 0.2s, transform 0.2s;
-  z-index: 4;
+  z-index: 2; /* Can overlap shortcuts (z-index 1) */
   max-height: 400px; /* Will be set dynamically by JS */
   min-height: 200px;
   display: flex;
@@ -480,16 +479,25 @@ body {
 /* Quick Links */
 .newtab-quick-links {
   position: absolute;
-  bottom: 180px; /* Above stats and hints */
+  bottom: 100px; /* Above hints */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   justify-content: center;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* One row only */
+  overflow-x: auto;
+  overflow-y: hidden;
   z-index: 1;
   width: 100%;
   max-width: 680px;
+  padding: 0 20px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.newtab-quick-links::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
 .newtab-quick-link {
@@ -569,6 +577,13 @@ body {
 .newtab-quick-icon.translate {
   background: rgba(66, 133, 244, 0.15);
   color: #4285f4;
+}
+
+.newtab-quick-icon.custom {
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--accent);
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .newtab-quick-icon.news {
@@ -697,6 +712,7 @@ body {
   font-size: 12px;
 }
 
+.newtab-dashboard-btn,
 .newtab-hint-customize {
   color: var(--accent);
   text-decoration: none;
@@ -706,9 +722,20 @@ body {
   background: rgba(99, 102, 241, 0.1);
   border: 1px solid rgba(99, 102, 241, 0.2);
   transition: all 0.15s;
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+}
+
+.newtab-dashboard-btn {
+  margin-right: 8px;
+}
+
+.newtab-hint-customize {
   margin-left: 8px;
 }
 
+.newtab-dashboard-btn:hover,
 .newtab-hint-customize:hover {
   background: rgba(99, 102, 241, 0.2);
   border-color: rgba(99, 102, 241, 0.4);

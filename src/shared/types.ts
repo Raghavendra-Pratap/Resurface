@@ -53,6 +53,16 @@ export interface Intent {
 }
 
 /**
+ * Custom quick link
+ */
+export interface CustomLink {
+  id: UUID;
+  name: string;
+  url: string;
+  icon?: string; // Optional icon identifier or emoji
+}
+
+/**
  * User settings
  */
 export interface Settings {
@@ -61,6 +71,10 @@ export interface Settings {
   autoSaveDelay: number;        // Default: 5000 (ms)
   showResurfaceDropdown: boolean;
   defaultIntentId: UUID | null;
+  // New tab settings
+  newTabShowLogo: boolean;        // Default: true
+  newTabEnabledShortcuts: string[]; // Array of shortcut IDs (e.g., ['gmail', 'drive', 'youtube'])
+  newTabCustomLinks: CustomLink[];  // User-added custom links
 }
 
 /**

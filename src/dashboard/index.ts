@@ -423,14 +423,45 @@ function setupEventListeners() {
     if (autoSaveValue) autoSaveValue.textContent = `${autoSaveRange.value}s`;
   });
 
+  // New tab settings
+  setupNewTabSettings();
+  
   // Save settings button
   document.getElementById('btn-save-settings')?.addEventListener('click', async () => {
     const autoSaveDelay = parseInt(autoSaveRange.value) * 1000;
     const showResurfaceDropdown = (document.getElementById('setting-show-dropdown') as HTMLInputElement).checked;
+    const newTabShowLogo = (document.getElementById('setting-newtab-show-logo') as HTMLInputElement).checked;
+    
+    // Get enabled shortcuts
+    const enabledShortcuts: string[] = [];
+    document.querySelectorAll('#shortcuts-checkboxes input[type="checkbox"]:checked').forEach((checkbox) => {
+      const id = (checkbox as HTMLInputElement).dataset.shortcutId;
+      if (id) enabledShortcuts.push(id);
+    });
+    
+    // Get custom links
+    const customLinks: Array<{ id: string; name: string; url: string; icon?: string }> = [];
+    document.querySelectorAll('.custom-link-item').forEach((item) => {
+      const nameInput = item.querySelector('.custom-link-name') as HTMLInputElement;
+      const urlInput = item.querySelector('.custom-link-url') as HTMLInputElement;
+      const iconInput = item.querySelector('.custom-link-icon') as HTMLInputElement;
+      const linkId = (item as HTMLElement).dataset.linkId;
+      if (nameInput && urlInput && linkId) {
+        customLinks.push({
+          id: linkId,
+          name: nameInput.value.trim(),
+          url: urlInput.value.trim(),
+          icon: iconInput?.value.trim() || undefined
+        });
+      }
+    });
 
     state.settings = await sendToBackground('UPDATE_SETTINGS', {
       autoSaveDelay,
-      showResurfaceDropdown
+      showResurfaceDropdown,
+      newTabShowLogo,
+      newTabEnabledShortcuts: enabledShortcuts,
+      newTabCustomLinks: customLinks
     });
 
     if (settingsModal) settingsModal.style.display = 'none';
@@ -458,6 +489,121 @@ function updateSettingsUI() {
   if (showDropdownCheck) {
     showDropdownCheck.checked = state.settings.showResurfaceDropdown;
   }
+  
+  // New tab settings
+  const showLogoCheck = document.getElementById('setting-newtab-show-logo') as HTMLInputElement;
+  if (showLogoCheck) {
+    showLogoCheck.checked = state.settings.newTabShowLogo !== false; // Default true
+  }
+  
+  renderShortcutsCheckboxes();
+  renderCustomLinks();
+}
+
+/**
+ * Setup new tab settings UI
+ */
+function setupNewTabSettings() {
+  // Add custom link button
+  document.getElementById('btn-add-custom-link')?.addEventListener('click', () => {
+    addCustomLinkItem();
+  });
+}
+
+/**
+ * Render shortcuts checkboxes
+ */
+function renderShortcutsCheckboxes() {
+  const container = document.getElementById('shortcuts-checkboxes');
+  if (!container || !state.settings) return;
+  
+  const allShortcuts = [
+    { id: 'gemini', name: 'Gemini' },
+    { id: 'gmail', name: 'Gmail' },
+    { id: 'drive', name: 'Drive' },
+    { id: 'docs', name: 'Docs' },
+    { id: 'sheets', name: 'Sheets' },
+    { id: 'slides', name: 'Slides' },
+    { id: 'youtube', name: 'YouTube' },
+    { id: 'maps', name: 'Maps' },
+    { id: 'calendar', name: 'Calendar' },
+    { id: 'translate', name: 'Translate' }
+  ];
+  
+  const enabled = state.settings.newTabEnabledShortcuts || [];
+  
+  container.innerHTML = allShortcuts.map(shortcut => `
+    <label class="checkbox-label">
+      <input 
+        type="checkbox" 
+        data-shortcut-id="${shortcut.id}"
+        ${enabled.includes(shortcut.id) ? 'checked' : ''}
+      >
+      ${shortcut.name}
+    </label>
+  `).join('');
+}
+
+/**
+ * Render custom links
+ */
+function renderCustomLinks() {
+  const container = document.getElementById('custom-links-list');
+  if (!container || !state.settings) return;
+  
+  const customLinks = state.settings.newTabCustomLinks || [];
+  
+  if (customLinks.length === 0) {
+    container.innerHTML = '<p class="settings-hint" style="margin: 0;">No custom links yet.</p>';
+    return;
+  }
+  
+  container.innerHTML = customLinks.map(link => `
+    <div class="custom-link-item" data-link-id="${link.id}">
+      <input type="text" class="custom-link-name" placeholder="Name" value="${escapeHtml(link.name)}">
+      <input type="url" class="custom-link-url" placeholder="URL" value="${escapeHtml(link.url)}">
+      <input type="text" class="custom-link-icon" placeholder="Icon (emoji or URL)" value="${link.icon ? escapeHtml(link.icon) : ''}">
+      <button class="btn-icon delete" data-action="delete-custom-link" title="Delete">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      </button>
+    </div>
+  `).join('');
+  
+  // Add delete handlers
+  container.querySelectorAll('[data-action="delete-custom-link"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = (btn as HTMLElement).closest('.custom-link-item');
+      item?.remove();
+    });
+  });
+}
+
+/**
+ * Add a new custom link item
+ */
+function addCustomLinkItem() {
+  const container = document.getElementById('custom-links-list');
+  if (!container) return;
+  
+  const linkId = `custom-${Date.now()}`;
+  const item = document.createElement('div');
+  item.className = 'custom-link-item';
+  item.dataset.linkId = linkId;
+  item.innerHTML = `
+    <input type="text" class="custom-link-name" placeholder="Name">
+    <input type="url" class="custom-link-url" placeholder="URL">
+    <input type="text" class="custom-link-icon" placeholder="Icon (emoji or URL)">
+    <button class="btn-icon delete" data-action="delete-custom-link" title="Delete">
+      <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+    </button>
+  `;
+  
+  container.appendChild(item);
+  
+  // Add delete handler
+  item.querySelector('[data-action="delete-custom-link"]')?.addEventListener('click', () => {
+    item.remove();
+  });
 }
 
 /**
