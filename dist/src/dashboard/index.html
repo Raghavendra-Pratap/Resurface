@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resurface - Dashboard</title>
+  <script type="module" crossorigin src="/src/dashboard/index.js"></script>
+  <link rel="modulepreload" crossorigin href="/messages.js">
+  <link rel="stylesheet" crossorigin href="/index2.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <span class="logo-text">Resurface</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-label">Library</div>
+          <button class="nav-item active" data-filter="all">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            <span>All Saved</span>
+            <span class="nav-count" id="count-all">0</span>
+          </button>
+          <button class="nav-item" data-filter="recent">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Recent</span>
+            <span class="nav-count" id="count-recent">0</span>
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label">
+            Topics
+            <button class="nav-label-action" id="btn-add-topic">+ New</button>
+          </div>
+          <div id="topics-list">
+            <!-- Topics will be loaded here -->
+          </div>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label">
+            Intents
+            <button class="nav-label-action" id="btn-add-intent">+ New</button>
+          </div>
+          <div id="intents-list">
+            <!-- Intents will be loaded here -->
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="nav-item" id="btn-settings">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Settings</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <header class="main-header">
+        <h1 class="main-title" id="page-title">All Saved</h1>
+        <div class="main-actions">
+          <div class="search-bar">
+            <svg viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M21 21l-4.35-4.35"/>
+            </svg>
+            <input type="text" id="search-input" placeholder="Search saved items...">
+          </div>
+          <div class="view-toggle">
+            <button class="view-btn active" data-view="grid">
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            </button>
+            <button class="view-btn" data-view="list">
+              <svg viewBox="0 0 24 24">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <div class="items-grid" id="items-container">
+          <!-- Items will be loaded here -->
+        </div>
+        
+        <div class="empty-state" id="empty-state" style="display: none;">
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <h2>No saved items yet</h2>
+          <p>Press <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>S</kbd> to save your first tab</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-backdrop" id="settings-modal" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Settings</h2>
+        <button class="modal-close" id="btn-close-settings">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-group">
+          <label class="settings-label">Keyboard Shortcut</label>
+          <div class="shortcut-customize">
+            <code id="current-shortcut">Cmd+Shift+S</code>
+            <p class="settings-hint">
+              Shortcuts can only be changed in Chrome's extension settings.
+              <a href="#" id="link-chrome-shortcuts">Open Chrome Shortcuts</a>
+            </p>
+          </div>
+        </div>
+        
+        <div class="settings-group">
+          <label class="settings-label">Auto-save Delay (seconds)</label>
+          <div class="range-with-value">
+            <input type="range" id="setting-auto-save" min="0" max="10" step="1" value="5">
+            <span id="auto-save-value">5s</span>
+          </div>
+          <p class="settings-hint">How long to wait before auto-saving after you click the icon or use the shortcut.</p>
+        </div>
+
+        <div class="settings-group">
+          <label class="settings-label">Resurfacing</label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="setting-show-dropdown" checked>
+            Show relevant pages when typing in URL bar
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btn-save-settings">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

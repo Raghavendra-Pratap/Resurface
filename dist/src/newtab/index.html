@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Tab</title>
+  <script type="module" crossorigin src="/src/newtab/index.js"></script>
+  <link rel="modulepreload" crossorigin href="/messages.js">
+  <link rel="stylesheet" crossorigin href="/index.css">
+</head>
+<body>
+  <div class="newtab-container">
+    <!-- Background gradient -->
+    <div class="newtab-bg"></div>
+    
+    <!-- Main content -->
+    <div class="newtab-content">
+      <!-- Logo -->
+      <div class="newtab-logo">
+        <div class="newtab-logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <span class="newtab-logo-text">Resurface</span>
+      </div>
+      
+      <!-- Search container -->
+      <div class="newtab-search-wrapper">
+        <!-- History tray (above search) -->
+        <div class="newtab-history-tray" id="history-tray">
+          <div class="newtab-history-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>From your history</span>
+          </div>
+          <div class="newtab-history-list" id="history-list">
+            <!-- History items will be injected here -->
+          </div>
+        </div>
+        
+        <div class="newtab-search-box">
+          <svg class="newtab-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input 
+            type="text" 
+            id="search-input" 
+            class="newtab-search-input" 
+            placeholder="Search the web or your saved tabs..."
+            autocomplete="off"
+            autofocus
+          >
+          <div class="newtab-search-hint" id="search-hint">
+            <kbd>↵</kbd> Google
+          </div>
+        </div>
+        
+        <!-- Saved items tray (below search) -->
+        <div class="newtab-results-tray" id="results-tray">
+          <div class="newtab-results-header" id="results-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span><strong id="results-count">0</strong> saved pages match</span>
+          </div>
+          <div class="newtab-results-list" id="results-list">
+            <!-- Results will be injected here -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Quick stats -->
+      <div class="newtab-stats" id="stats">
+        <div class="newtab-stat">
+          <span class="newtab-stat-value" id="stat-total">0</span>
+          <span class="newtab-stat-label">saved pages</span>
+        </div>
+        <div class="newtab-stat-divider"></div>
+        <div class="newtab-stat">
+          <span class="newtab-stat-value" id="stat-topics">0</span>
+          <span class="newtab-stat-label">topics</span>
+        </div>
+        <div class="newtab-stat-divider"></div>
+        <a href="#" id="open-dashboard" class="newtab-stat newtab-stat-link">
+          <span class="newtab-stat-label">Open Dashboard →</span>
+        </a>
+      </div>
+    </div>
+    
+    <!-- Keyboard hints -->
+    <div class="newtab-hints">
+      <span><kbd>⌘</kbd><kbd>⇧</kbd><kbd>S</kbd> Save current tab</span>
+      <span><kbd>⌘</kbd><kbd>⇧</kbd><kbd>F</kbd> Search saved tabs</span>
+    </div>
+  </div>
+  
+</body>
+</html>

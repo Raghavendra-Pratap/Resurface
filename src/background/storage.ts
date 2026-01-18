@@ -1,0 +1,469 @@
+import { openDB, IDBPDatabase, DBSchema } from 'idb';
+import type { SavedItem, Topic, Intent, Settings, UUID } from '../shared/types';
+import { 
+  DEFAULT_INTENTS, 
+  DEFAULT_TOPIC_COLORS,
+  STORAGE_DB_NAME, 
+  STORAGE_DB_VERSION 
+} from '../shared/constants';
+import { generateId, now, getRandomColor } from '../shared/utils';
+
+// Database schema
+interface ResurfaceDB extends DBSchema {
+  savedItems: {
+    key: string;
+    value: SavedItem;
+    indexes: {
+      'by-url': string;
+      'by-savedAt': number;
+      'by-searchText': string;
+    };
+  };
+  topics: {
+    key: string;
+    value: Topic;
+    indexes: {
+      'by-name': string;
+    };
+  };
+  intents: {
+    key: string;
+    value: Intent;
+    indexes: {
+      'by-name': string;
+    };
+  };
+  settings: {
+    key: string;
+    value: Settings;
+  };
+}
+
+// Database instance
+let db: IDBPDatabase<ResurfaceDB> | null = null;
+
+/**
+ * Ensure database is initialized (lazy initialization)
+ */
+async function ensureDb(): Promise<IDBPDatabase<ResurfaceDB>> {
+  console.log('Resurface Storage: ensureDb called, db exists:', !!db);
+  if (!db) {
+    console.log('Resurface Storage: DB not initialized, calling initStorage...');
+    await initStorage();
+    console.log('Resurface Storage: initStorage completed, db exists:', !!db);
+  }
+  return db!;
+}
+
+/**
+ * Initialize the database
+ */
+export async function initStorage(): Promise<void> {
+  if (db) return; // Already initialized
+  
+  db = await openDB<ResurfaceDB>(STORAGE_DB_NAME, STORAGE_DB_VERSION, {
+    upgrade(database) {
+      // Saved items store
+      const itemsStore = database.createObjectStore('savedItems', { keyPath: 'id' });
+      itemsStore.createIndex('by-url', 'url');
+      itemsStore.createIndex('by-savedAt', 'savedAt');
+      itemsStore.createIndex('by-searchText', 'searchText');
+      
+      // Topics store
+      const topicsStore = database.createObjectStore('topics', { keyPath: 'id' });
+      topicsStore.createIndex('by-name', 'name');
+      
+      // Intents store
+      const intentsStore = database.createObjectStore('intents', { keyPath: 'id' });
+      intentsStore.createIndex('by-name', 'name');
+      
+      // Settings store
+      database.createObjectStore('settings', { keyPath: 'id' });
+    },
+  });
+  
+  // Initialize default data
+  await initDefaults();
+}
+
+/**
+ * Initialize default intents and settings
+ */
+async function initDefaults(): Promise<void> {
+  const database = await ensureDb();
+  
+  // Check if intents exist
+  const existingIntents = await database.getAll('intents');
+  if (existingIntents.length === 0) {
+    // Create default intents
+    for (const intent of DEFAULT_INTENTS) {
+      await database.add('intents', {
+        id: generateId(),
+        name: intent.name,
+        emoji: intent.emoji,
+        createdAt: now(),
+        itemCount: 0
+      });
+    }
+  }
+  
+  // Check if settings exist
+  const existingSettings = await database.get('settings', 'main');
+  if (!existingSettings) {
+    await database.add('settings', {
+      id: 'main',
+      keyboardShortcut: 'Cmd+Shift+S',
+      autoSaveDelay: 5000,
+      showResurfaceDropdown: true,
+      defaultIntentId: null
+    });
+  }
+}
+
+// ============ SAVED ITEMS ============
+
+/**
+ * Save a new item
+ */
+export async function saveItem(item: SavedItem): Promise<SavedItem> {
+  console.log('Resurface Storage: saveItem called with:', item.url);
+  
+  try {
+    const database = await ensureDb();
+    console.log('Resurface Storage: Got database reference');
+    
+    // Check for duplicate URL
+    console.log('Resurface Storage: Checking for existing item with URL:', item.url);
+    const existing = await database.getFromIndex('savedItems', 'by-url', item.url);
+    console.log('Resurface Storage: Existing item found:', !!existing);
+    
+    if (existing) {
+      // Update existing item
+      console.log('Resurface Storage: Updating existing item');
+      const updated = { 
+        ...existing, 
+        ...item, 
+        id: existing.id,
+        savedAt: existing.savedAt, // Keep original save date
+        lastAccessedAt: now()
+      };
+      await database.put('savedItems', updated);
+      console.log('Resurface Storage: Item updated successfully');
+      return updated;
+    }
+    
+    // Add new item
+    console.log('Resurface Storage: Adding new item...');
+    await database.add('savedItems', item);
+    console.log('Resurface Storage: Item added to database');
+    
+    // Update topic counts
+    console.log('Resurface Storage: Updating topic counts for:', item.topicIds);
+    await updateTopicCounts(item.topicIds, 1);
+    
+    // Update intent counts
+    console.log('Resurface Storage: Updating intent counts for:', item.intentIds);
+    await updateIntentCounts(item.intentIds, 1);
+    
+    console.log('Resurface Storage: saveItem completed successfully');
+    return item;
+  } catch (error) {
+    console.error('Resurface Storage: Error in saveItem:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get item by URL (to check if already saved)
+ */
+export async function getItemByUrl(url: string): Promise<SavedItem | undefined> {
+  const database = await ensureDb();
+  return database.getFromIndex('savedItems', 'by-url', url);
+}
+
+/**
+ * Get all saved items
+ */
+export async function getAllItems(): Promise<SavedItem[]> {
+  const database = await ensureDb();
+  const items = await database.getAll('savedItems');
+  return items.sort((a, b) => b.savedAt - a.savedAt);
+}
+
+/**
+ * Search items by query
+ */
+export async function searchItems(query: string, limit = 10): Promise<SavedItem[]> {
+  const database = await ensureDb();
+  const normalizedQuery = query.toLowerCase().trim();
+  if (!normalizedQuery) return [];
+  
+  const allItems = await database.getAll('savedItems');
+  
+  // Simple search: check if searchText contains query words
+  const queryWords = normalizedQuery.split(/\s+/);
+  
+  return allItems
+    .filter(item => 
+      queryWords.some(word => item.searchText.includes(word))
+    )
+    .sort((a, b) => {
+      // Score by how many words match
+      const scoreA = queryWords.filter(w => a.searchText.includes(w)).length;
+      const scoreB = queryWords.filter(w => b.searchText.includes(w)).length;
+      if (scoreB !== scoreA) return scoreB - scoreA;
+      
+      // Then by recency
+      return b.savedAt - a.savedAt;
+    })
+    .slice(0, limit);
+}
+
+/**
+ * Get items by topic
+ */
+export async function getItemsByTopic(topicId: UUID): Promise<SavedItem[]> {
+  const database = await ensureDb();
+  const allItems = await database.getAll('savedItems');
+  return allItems
+    .filter(item => item.topicIds.includes(topicId))
+    .sort((a, b) => b.savedAt - a.savedAt);
+}
+
+/**
+ * Get items by intent
+ */
+export async function getItemsByIntent(intentId: UUID): Promise<SavedItem[]> {
+  const database = await ensureDb();
+  const allItems = await database.getAll('savedItems');
+  return allItems
+    .filter(item => item.intentIds.includes(intentId))
+    .sort((a, b) => b.savedAt - a.savedAt);
+}
+
+/**
+ * Update an item
+ */
+export async function updateItem(id: UUID, updates: Partial<SavedItem>): Promise<SavedItem | null> {
+  const database = await ensureDb();
+  const item = await database.get('savedItems', id);
+  if (!item) return null;
+  
+  // Track topic/intent changes for counts
+  const oldTopicIds = item.topicIds;
+  const oldIntentIds = item.intentIds;
+  
+  const updated = { ...item, ...updates, lastAccessedAt: now() };
+  await database.put('savedItems', updated);
+  
+  // Update counts if topics changed
+  if (updates.topicIds) {
+    const removedTopics = oldTopicIds.filter(id => !updates.topicIds!.includes(id));
+    const addedTopics = updates.topicIds.filter(id => !oldTopicIds.includes(id));
+    await updateTopicCounts(removedTopics, -1);
+    await updateTopicCounts(addedTopics, 1);
+  }
+  
+  // Update counts if intents changed
+  if (updates.intentIds) {
+    const removedIntents = oldIntentIds.filter(id => !updates.intentIds!.includes(id));
+    const addedIntents = updates.intentIds.filter(id => !oldIntentIds.includes(id));
+    await updateIntentCounts(removedIntents, -1);
+    await updateIntentCounts(addedIntents, 1);
+  }
+  
+  return updated;
+}
+
+/**
+ * Delete an item
+ */
+export async function deleteItem(id: UUID): Promise<boolean> {
+  const database = await ensureDb();
+  const item = await database.get('savedItems', id);
+  if (!item) return false;
+  
+  await database.delete('savedItems', id);
+  
+  // Update counts
+  await updateTopicCounts(item.topicIds, -1);
+  await updateIntentCounts(item.intentIds, -1);
+  
+  return true;
+}
+
+// ============ TOPICS ============
+
+/**
+ * Get all topics
+ */
+export async function getAllTopics(): Promise<Topic[]> {
+  const database = await ensureDb();
+  const topics = await database.getAll('topics');
+  return topics.sort((a, b) => b.itemCount - a.itemCount);
+}
+
+/**
+ * Get or create a topic by name
+ */
+export async function getOrCreateTopic(name: string, isAutoGenerated = false): Promise<Topic> {
+  const database = await ensureDb();
+  const normalizedName = name.trim();
+  const existing = await database.getFromIndex('topics', 'by-name', normalizedName);
+  
+  if (existing) return existing;
+  
+  // Get existing colors to avoid duplicates
+  const allTopics = await database.getAll('topics');
+  const existingColors = allTopics.map(t => t.color);
+  
+  const newTopic: Topic = {
+    id: generateId(),
+    name: normalizedName,
+    color: getRandomColor(DEFAULT_TOPIC_COLORS, existingColors),
+    isAutoGenerated,
+    createdAt: now(),
+    itemCount: 0
+  };
+  
+  await database.add('topics', newTopic);
+  return newTopic;
+}
+
+/**
+ * Create a new topic
+ */
+export async function createTopic(name: string): Promise<Topic> {
+  return getOrCreateTopic(name, false);
+}
+
+/**
+ * Update topic counts
+ */
+async function updateTopicCounts(topicIds: UUID[], delta: number): Promise<void> {
+  const database = await ensureDb();
+  for (const id of topicIds) {
+    const topic = await database.get('topics', id);
+    if (topic) {
+      topic.itemCount = Math.max(0, topic.itemCount + delta);
+      await database.put('topics', topic);
+    }
+  }
+}
+
+/**
+ * Delete a topic
+ */
+export async function deleteTopic(id: UUID): Promise<boolean> {
+  const database = await ensureDb();
+  const topic = await database.get('topics', id);
+  if (!topic) return false;
+  
+  // Remove topic from all items
+  const items = await getItemsByTopic(id);
+  for (const item of items) {
+    await updateItem(item.id, {
+      topicIds: item.topicIds.filter(tid => tid !== id)
+    });
+  }
+  
+  await database.delete('topics', id);
+  return true;
+}
+
+/**
+ * Rename a topic
+ */
+export async function renameTopic(id: UUID, newName: string): Promise<Topic | null> {
+  const database = await ensureDb();
+  const topic = await database.get('topics', id);
+  if (!topic) return null;
+  
+  topic.name = newName.trim();
+  await database.put('topics', topic);
+  return topic;
+}
+
+// ============ INTENTS ============
+
+/**
+ * Get all intents
+ */
+export async function getAllIntents(): Promise<Intent[]> {
+  const database = await ensureDb();
+  const intents = await database.getAll('intents');
+  return intents.sort((a, b) => b.itemCount - a.itemCount);
+}
+
+/**
+ * Create a new intent
+ */
+export async function createIntent(name: string, emoji: string): Promise<Intent> {
+  const database = await ensureDb();
+  const newIntent: Intent = {
+    id: generateId(),
+    name: name.trim(),
+    emoji,
+    createdAt: now(),
+    itemCount: 0
+  };
+  
+  await database.add('intents', newIntent);
+  return newIntent;
+}
+
+/**
+ * Update intent counts
+ */
+async function updateIntentCounts(intentIds: UUID[], delta: number): Promise<void> {
+  const database = await ensureDb();
+  for (const id of intentIds) {
+    const intent = await database.get('intents', id);
+    if (intent) {
+      intent.itemCount = Math.max(0, intent.itemCount + delta);
+      await database.put('intents', intent);
+    }
+  }
+}
+
+/**
+ * Delete an intent
+ */
+export async function deleteIntent(id: UUID): Promise<boolean> {
+  const database = await ensureDb();
+  const intent = await database.get('intents', id);
+  if (!intent) return false;
+  
+  // Remove intent from all items
+  const items = await getItemsByIntent(id);
+  for (const item of items) {
+    await updateItem(item.id, {
+      intentIds: item.intentIds.filter(iid => iid !== id)
+    });
+  }
+  
+  await database.delete('intents', id);
+  return true;
+}
+
+// ============ SETTINGS ============
+
+/**
+ * Get settings
+ */
+export async function getSettings(): Promise<Settings> {
+  const database = await ensureDb();
+  const settings = await database.get('settings', 'main');
+  return settings!;
+}
+
+/**
+ * Update settings
+ */
+export async function updateSettings(updates: Partial<Settings>): Promise<Settings> {
+  const database = await ensureDb();
+  const settings = await getSettings();
+  const updated = { ...settings, ...updates };
+  await database.put('settings', updated);
+  return updated;
+}

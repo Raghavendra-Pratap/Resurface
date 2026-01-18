@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TabMind – Wireframes v2</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #0a0a0b;
+      --bg-card: #141416;
+      --bg-card-hover: #1a1a1e;
+      --bg-input: #1c1c20;
+      --border: #2a2a2e;
+      --border-light: #3a3a3e;
+      --text-primary: #f5f5f7;
+      --text-secondary: #8a8a8e;
+      --text-muted: #5a5a5e;
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+      --accent-glow: rgba(99, 102, 241, 0.3);
+      --success: #22c55e;
+      --success-glow: rgba(34, 197, 94, 0.2);
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --topic-ai: #818cf8;
+      --topic-dev: #34d399;
+      --topic-design: #fbbf24;
+      --topic-startup: #f87171;
+      --intent-read: #38bdf8;
+      --intent-reference: #a78bfa;
+      --intent-share: #fb7185;
+    }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 40px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 80px;
+      padding-top: 40px;
+    }
+
+    .logo {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .version-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .wireframe-section {
+      margin-bottom: 100px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .section-number {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .section-desc {
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+      max-width: 700px;
+      font-size: 16px;
+    }
+
+    /* Browser Mockup */
+    .browser-frame {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .browser-toolbar {
+      background: #1c1c20;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .browser-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .browser-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .browser-dot.red { background: #ff5f57; }
+    .browser-dot.yellow { background: #ffbd2e; }
+    .browser-dot.green { background: #28c840; }
+
+    .url-bar {
+      flex: 1;
+      background: var(--bg-dark);
+      border-radius: 8px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .url-bar-icon {
+      color: var(--text-muted);
+    }
+
+    .extension-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .extension-icon:hover {
+      box-shadow: 0 0 20px var(--accent-glow);
+      transform: scale(1.05);
+    }
+
+    .browser-content {
+      padding: 40px;
+      min-height: 300px;
+      position: relative;
+      background: linear-gradient(180deg, #0f0f11 0%, #0a0a0b 100%);
+    }
+
+    /* NEW Save Toast */
+    .save-toast {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 340px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px var(--accent-glow);
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .toast-header {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    .toast-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toast-header-text {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .toast-header-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .toast-body {
+      padding: 16px 20px;
+    }
+
+    .toast-field {
+      margin-bottom: 14px;
+    }
+
+    .toast-field:last-child {
+      margin-bottom: 0;
+    }
+
+    .toast-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .toast-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .toast-input:focus {
+      border-color: var(--accent);
+    }
+
+    .toast-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 42px;
+      align-items: center;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: default;
+    }
+
+    .tag-topic {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--topic-ai);
+    }
+
+    .tag-topic.dev {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--topic-dev);
+    }
+
+    .tag-intent {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--intent-read);
+    }
+
+    .tag-intent.reference {
+      background: rgba(167, 139, 250, 0.15);
+      color: var(--intent-reference);
+    }
+
+    .tag-remove {
+      width: 14px;
+      height: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+
+    .tag-remove:hover {
+      opacity: 1;
+    }
+
+    .tag-add {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: 1px dashed var(--border);
+      transition: all 0.2s;
+    }
+
+    .tag-add:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .toast-select {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--text-primary);
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%238a8a8e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+
+    .toast-footer {
+      padding: 12px 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid var(--border);
+      background: rgba(0,0,0,0.2);
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-secondary {
+      background: var(--bg-input);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .toast-timer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: var(--accent);
+      width: 70%;
+      border-radius: 0 2px 2px 0;
+      animation: timerShrink 5s linear forwards;
+    }
+
+    @keyframes timerShrink {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
+
+    /* Fake page content */
+    .fake-page {
+      opacity: 0.3;
+    }
+
+    .fake-line {
+      height: 12px;
+      background: var(--border);
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    .fake-line.short { width: 60%; }
+    .fake-line.medium { width: 80%; }
+    .fake-line.long { width: 100%; }
+
+    /* Resurfacing Dropdown */
+    .resurface-dropdown {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 520px;
+      background: var(--bg-card);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px var(--accent-glow);
+    }
+
+    .resurface-header {
+      padding: 14px 16px;
+      background: rgba(99, 102, 241, 0.1);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .resurface-header-icon {
+      color: var(--accent);
+    }
+
+    .resurface-header-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .resurface-header-text strong {
+      color: var(--text-primary);
+    }
+
+    .resurface-items {
+      padding: 8px;
+    }
+
+    .resurface-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .resurface-item:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .resurface-favicon {
+      width: 36px;
+      height: 36px;
+      background: var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .resurface-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .resurface-title {
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+
+    .resurface-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .resurface-tags {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+
+    .mini-tag {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .mini-tag.topic {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--topic-ai);
+    }
+
+    .mini-tag.intent {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--intent-read);
+    }
+
+    /* Dashboard */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 0;
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      min-height: 600px;
+    }
+
+    .dashboard-sidebar {
+      background: #0f0f11;
+      padding: 24px;
+      border-right: 1px solid var(--border);
+    }
+
+    .dashboard-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .dashboard-logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dashboard-logo-text {
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .sidebar-section {
+      margin-bottom: 28px;
+    }
+
+    .sidebar-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sidebar-label-action {
+      font-size: 10px;
+      color: var(--accent);
+      cursor: pointer;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .sidebar-item:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+
+    .sidebar-item.active {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent);
+    }
+
+    .sidebar-item-count {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .sidebar-color-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
+    .dashboard-main {
+      padding: 24px 32px;
+      overflow-y: auto;
+    }
+
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .dashboard-title {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .dashboard-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 16px;
+      width: 280px;
+    }
+
+    .search-bar input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .search-bar input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .view-toggle {
+      display: flex;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .view-toggle-btn {
+      padding: 8px 12px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .view-toggle-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .saved-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .saved-card {
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .saved-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .saved-card-header {
+      display: flex;
+      align-items: start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .saved-card-favicon {
+      width: 40px;
+      height: 40px;
+      background: var(--bg-card);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .saved-card-title {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .saved-card-url {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 12px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .saved-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .saved-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .saved-card-context {
+      font-size: 11px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .saved-card-time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Keyboard shortcut hint */
+    .shortcut-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .kbd {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+    }
+
+    /* Flow annotations */
+    .flow-annotation {
+      display: flex;
+      align-items: start;
+      gap: 12px;
+      margin-top: 24px;
+      padding: 16px;
+      background: rgba(99, 102, 241, 0.05);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .flow-annotation-icon {
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .flow-annotation-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .flow-annotation-text strong {
+      color: var(--text-primary);
+    }
+
+    /* Section divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 80px 0;
+    }
+
+    /* Behavior table */
+    .behavior-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 24px;
+      font-size: 14px;
+    }
+
+    .behavior-table th,
+    .behavior-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .behavior-table th {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .behavior-table td {
+      color: var(--text-secondary);
+    }
+
+    .behavior-table td:first-child {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .behavior-table tr:hover td {
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    /* States wireframe */
+    .states-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .state-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .state-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .mini-toast {
+      background: var(--bg-dark);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mini-toast-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mini-toast-icon.success { background: var(--success); }
+    .mini-toast-icon.info { background: var(--accent); }
+    .mini-toast-icon.warning { background: #f59e0b; }
+
+    .mini-toast-text {
+      font-size: 13px;
+    }
+
+    /* Tag legend */
+    .tag-legend {
+      display: flex;
+      gap: 32px;
+      margin-top: 24px;
+      padding: 20px;
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .tag-legend-group h4 {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .tag-legend-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">Wireframes <span class="version-badge">v2</span></div>
+      <h1>TabMind</h1>
+      <p class="subtitle">Close tabs without fear. Save with context, resurface when relevant.</p>
+    </header>
+
+    <!-- FLOW 1: SAVING -->
+    <section class="wireframe-section">
+      <div class="section-header">
+        <div class="section-number">1</div>
+        <h2 class="section-title">Save Flow</h2>
+      </div>
+      <p class="section-desc">
+        User hits <strong>⌘+Shift+S</strong> (or clicks extension icon). Toast appears with editable fields, 
+        auto-suggested topics, and Cancel/Save buttons. Auto-saves after 5 seconds if no action taken.
+      </p>
+
+      <div class="browser-frame">
+        <div class="browser-toolbar">
+          <div class="browser-dots">
+            <div class="browser-dot red"></div>
+            <div class="browser-dot yellow"></div>
+            <div class="browser-dot green"></div>
+          </div>
+          <div class="url-bar">
+            <svg class="url-bar-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            medium.com/ai-agents-productivity-guide-2024
+          </div>
+          <div class="extension-icon" title="TabMind">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="browser-content">
+          <div class="save-toast">
+            <div class="toast-header">
+              <div class="toast-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="toast-header-text">Add to TabMind</div>
+                <div class="toast-header-subtitle">Auto-saves in 5 seconds</div>
+              </div>
+            </div>
+            <div class="toast-body">
+              <div class="toast-field">
+                <div class="toast-label">Title</div>
+                <input type="text" class="toast-input" value="AI Agents: The Complete Productivity Guide 2024">
+              </div>
+              <div class="toast-field">
+                <div class="toast-label">Topics</div>
+                <div class="toast-tags">
+                  <span class="tag tag-topic">
+                    AI
+                    <span class="tag-remove">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                      </svg>
+                    </span>
+                  </span>
+                  <span class="tag tag-topic dev">
+                    Productivity
+                    <span class="tag-remove">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                      </svg>
+                    </span>
+                  </span>
+                  <span class="tag-add">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    Add
+                  </span>
+                </div>
+              </div>
+              <div class="toast-field">
+                <div class="toast-label">Intent (optional)</div>
+                <select class="toast-select">
+                  <option value="">Select intent...</option>
+                  <option value="read" selected>📖 Read Later</option>
+                  <option value="reference">📌 Reference</option>
+                  <option value="share">🔗 Share with someone</option>
+                  <option value="project">📁 Project research</option>
+                </select>
+              </div>
+            </div>
+            <div class="toast-footer">
+              <button class="btn btn-secondary">Cancel</button>
+              <button class="btn btn-primary">Save</button>
+            </div>
+            <div class="toast-timer"></div>
+          </div>
+          <div class="fake-page">
+            <div class="fake-line short"></div>
+            <div class="fake-line long"></div>
+            <div class="fake-line long"></div>
+            <div class="fake-line medium"></div>
+            <div class="fake-line long"></div>
+            <div class="fake-line short"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="shortcut-hint">
+        <span class="kbd">⌘</span>
+        <span class="kbd">⇧</span>
+        <span class="kbd">S</span>
+        <span style="margin-left: 8px;">to save current tab</span>
+      </div>
+
+      <table class="behavior-table">
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Click <strong>Save</strong></td>
+            <td>Saves with current values, closes toast</td>
+          </tr>
+          <tr>
+            <td>Click <strong>Cancel</strong></td>
+            <td>Discards, nothing saved, closes toast</td>
+          </tr>
+          <tr>
+            <td>Click outside toast</td>
+            <td>Saves with current values, closes toast</td>
+          </tr>
+          <tr>
+            <td>Press <strong>Esc</strong></td>
+            <td>Discards, nothing saved (escape hatch)</td>
+          </tr>
+          <tr>
+            <td>Do nothing (wait 5s)</td>
+            <td>Auto-saves with current values, closes toast</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="flow-annotation">
+        <svg class="flow-annotation-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4M12 8h.01"/>
+        </svg>
+        <div class="flow-annotation-text">
+          <strong>Auto-captured metadata:</strong> URL, favicon, timestamp, referrer search query, 
+          and other open tabs (for topic inference). Topics are pre-filled but editable.
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- FLOW 2: RESURFACING -->
+    <section class="wireframe-section">
+      <div class="section-header">
+        <div class="section-number">2</div>
+        <h2 class="section-title">Resurfacing Flow</h2>
+      </div>
+      <p class="section-desc">
+        User types in URL bar or searches Google. Extension detects keywords and shows 
+        matching saved items in a non-intrusive dropdown. Shows both topics and intents.
+      </p>
+
+      <div class="browser-frame">
+        <div class="browser-toolbar">
+          <div class="browser-dots">
+            <div class="browser-dot red"></div>
+            <div class="browser-dot yellow"></div>
+            <div class="browser-dot green"></div>
+          </div>
+          <div class="url-bar" style="border: 2px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow);">
+            <svg class="url-bar-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M21 21l-4.35-4.35"/>
+            </svg>
+            AI agents autonomous workflow|
+          </div>
+          <div class="extension-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="browser-content" style="min-height: 380px;">
+          <div class="resurface-dropdown">
+            <div class="resurface-header">
+              <svg class="resurface-header-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+              </svg>
+              <div class="resurface-header-text">
+                <strong>2 saved pages</strong> match your search
+              </div>
+            </div>
+            <div class="resurface-items">
+              <div class="resurface-item">
+                <div class="resurface-favicon">M</div>
+                <div class="resurface-info">
+                  <div class="resurface-title">AI Agents: The Complete Productivity Guide 2024</div>
+                  <div class="resurface-meta">
+                    <span>medium.com</span>
+                    <span>•</span>
+                    <span>2 weeks ago</span>
+                  </div>
+                </div>
+                <div class="resurface-tags">
+                  <span class="mini-tag topic">AI</span>
+                  <span class="mini-tag intent">Read Later</span>
+                </div>
+              </div>
+              <div class="resurface-item">
+                <div class="resurface-favicon">YT</div>
+                <div class="resurface-info">
+                  <div class="resurface-title">Building Autonomous AI Workflows - Full Tutorial</div>
+                  <div class="resurface-meta">
+                    <span>youtube.com</span>
+                    <span>•</span>
+                    <span>3 weeks ago</span>
+                  </div>
+                </div>
+                <div class="resurface-tags">
+                  <span class="mini-tag topic">AI</span>
+                  <span class="mini-tag intent">Reference</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-annotation">
+        <svg class="flow-annotation-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4M12 8h.01"/>
+        </svg>
+        <div class="flow-annotation-text">
+          <strong>Matching logic:</strong> Compares typed keywords against saved titles, URLs, 
+          original search queries, topics, and intents. Fuzzy matching for partial terms.
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- FLOW 3: DASHBOARD -->
+    <section class="wireframe-section">
+      <div class="section-header">
+        <div class="section-number">3</div>
+        <h2 class="section-title">Dashboard</h2>
+      </div>
+      <p class="section-desc">
+        Full view of all saved items. Browse by recency, filter by topics or intents, search across everything.
+        Topics and intents shown separately in sidebar for easy filtering.
+      </p>
+
+      <div class="dashboard">
+        <div class="dashboard-sidebar">
+          <div class="dashboard-logo">
+            <div class="dashboard-logo-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <div class="dashboard-logo-text">TabMind</div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-label">Library</div>
+            <div class="sidebar-item active">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+              All Saved
+              <span class="sidebar-item-count">47</span>
+            </div>
+            <div class="sidebar-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Recent
+              <span class="sidebar-item-count">12</span>
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-label">
+              Topics
+              <span class="sidebar-label-action">+ New</span>
+            </div>
+            <div class="sidebar-item">
+              <span class="sidebar-color-dot" style="background: var(--topic-ai);"></span>
+              AI & Agents
+              <span class="sidebar-item-count">14</span>
+            </div>
+            <div class="sidebar-item">
+              <span class="sidebar-color-dot" style="background: var(--topic-dev);"></span>
+              Development
+              <span class="sidebar-item-count">11</span>
+            </div>
+            <div class="sidebar-item">
+              <span class="sidebar-color-dot" style="background: var(--topic-design);"></span>
+              Product Design
+              <span class="sidebar-item-count">9</span>
+            </div>
+            <div class="sidebar-item">
+              <span class="sidebar-color-dot" style="background: var(--topic-startup);"></span>
+              Startups
+              <span class="sidebar-item-count">8</span>
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-label">
+              Intents
+              <span class="sidebar-label-action">+ New</span>
+            </div>
+            <div class="sidebar-item">
+              <span class="sidebar-color-dot" style="background: var(--intent-read);"></span>
+              📖 Read Later
+              <span class="sidebar-item-count">18</span>
+            </div>
+            <div class="sidebar-item">
+              <span class="sidebar-color-dot" style="background: var(--intent-reference);"></span>
+              📌 Reference
+              <span class="sidebar-item-count">12</span>
+            </div>
+            <div class="sidebar-item">
+              <span class="sidebar-color-dot" style="background: var(--intent-share);"></span>
+              🔗 Share
+              <span class="sidebar-item-count">7</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-main">
+          <div class="dashboard-header">
+            <h3 class="dashboard-title">All Saved</h3>
+            <div class="dashboard-actions">
+              <div class="search-bar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <input type="text" placeholder="Search saved items...">
+              </div>
+              <div class="view-toggle">
+                <button class="view-toggle-btn active">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"/>
+                    <rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/>
+                    <rect x="3" y="14" width="7" height="7"/>
+                  </svg>
+                </button>
+                <button class="view-toggle-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="saved-grid">
+            <div class="saved-card">
+              <div class="saved-card-header">
+                <div class="saved-card-favicon">M</div>
+                <div class="saved-card-title">AI Agents: The Complete Productivity Guide 2024</div>
+              </div>
+              <div class="saved-card-url">medium.com/@author/ai-agents-prod...</div>
+              <div class="saved-card-tags">
+                <span class="tag tag-topic" style="font-size: 11px; padding: 2px 8px;">AI</span>
+                <span class="tag tag-topic dev" style="font-size: 11px; padding: 2px 8px;">Productivity</span>
+                <span class="tag tag-intent" style="font-size: 11px; padding: 2px 8px;">📖 Read Later</span>
+              </div>
+              <div class="saved-card-footer">
+                <div class="saved-card-context">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                  </svg>
+                  "AI agents for productivity"
+                </div>
+                <div class="saved-card-time">2w ago</div>
+              </div>
+            </div>
+
+            <div class="saved-card">
+              <div class="saved-card-header">
+                <div class="saved-card-favicon">GH</div>
+                <div class="saved-card-title">langchain-ai/langgraph: Build stateful agents</div>
+              </div>
+              <div class="saved-card-url">github.com/langchain-ai/langgraph</div>
+              <div class="saved-card-tags">
+                <span class="tag tag-topic" style="font-size: 11px; padding: 2px 8px;">AI</span>
+                <span class="tag tag-topic dev" style="font-size: 11px; padding: 2px 8px;">Development</span>
+                <span class="tag tag-intent reference" style="font-size: 11px; padding: 2px 8px;">📌 Reference</span>
+              </div>
+              <div class="saved-card-footer">
+                <div class="saved-card-context">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                  </svg>
+                  "langgraph tutorial"
+                </div>
+                <div class="saved-card-time">3w ago</div>
+              </div>
+            </div>
+
+            <div class="saved-card">
+              <div class="saved-card-header">
+                <div class="saved-card-favicon">YT</div>
+                <div class="saved-card-title">Building Autonomous AI Workflows - Full Tutorial</div>
+              </div>
+              <div class="saved-card-url">youtube.com/watch?v=...</div>
+              <div class="saved-card-tags">
+                <span class="tag tag-topic" style="font-size: 11px; padding: 2px 8px;">AI</span>
+                <span class="tag tag-intent" style="font-size: 11px; padding: 2px 8px;">📖 Read Later</span>
+              </div>
+              <div class="saved-card-footer">
+                <div class="saved-card-context">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                  </svg>
+                  "AI agents for productivity"
+                </div>
+                <div class="saved-card-time">3w ago</div>
+              </div>
+            </div>
+
+            <div class="saved-card">
+              <div class="saved-card-header">
+                <div class="saved-card-favicon">N</div>
+                <div class="saved-card-title">The Future of Human-AI Collaboration in Design</div>
+              </div>
+              <div class="saved-card-url">nngroup.com/articles/ai-collab...</div>
+              <div class="saved-card-tags">
+                <span class="tag tag-topic" style="font-size: 11px; padding: 2px 8px;">AI</span>
+                <span class="tag tag-topic" style="font-size: 11px; padding: 2px 8px; background: rgba(251, 191, 36, 0.15); color: var(--topic-design);">Design</span>
+                <span class="tag tag-intent reference" style="font-size: 11px; padding: 2px 8px;">📌 Reference</span>
+              </div>
+              <div class="saved-card-footer">
+                <div class="saved-card-context">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                  </svg>
+                  "AI UX design trends"
+                </div>
+                <div class="saved-card-time">1mo ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tag-legend">
+        <div class="tag-legend-group">
+          <h4>Topics (auto-generated)</h4>
+          <div class="tag-legend-items">
+            <span class="tag tag-topic" style="font-size: 12px;">AI</span>
+            <span class="tag tag-topic dev" style="font-size: 12px;">Development</span>
+            <span class="tag tag-topic" style="font-size: 12px; background: rgba(251, 191, 36, 0.15); color: var(--topic-design);">Design</span>
+            <span class="tag tag-topic" style="font-size: 12px; background: rgba(248, 113, 113, 0.15); color: var(--topic-startup);">Startups</span>
+          </div>
+        </div>
+        <div class="tag-legend-group">
+          <h4>Intents (user-selected)</h4>
+          <div class="tag-legend-items">
+            <span class="tag tag-intent" style="font-size: 12px;">📖 Read Later</span>
+            <span class="tag tag-intent reference" style="font-size: 12px;">📌 Reference</span>
+            <span class="tag tag-intent" style="font-size: 12px; background: rgba(251, 113, 133, 0.15); color: var(--intent-share);">🔗 Share</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-annotation">
+        <svg class="flow-annotation-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4M12 8h.01"/>
+        </svg>
+        <div class="flow-annotation-text">
+          <strong>Multi-select:</strong> Each item can have multiple topics AND multiple intents. 
+          Filter by clicking any topic or intent in the sidebar. Rename, merge, or create new categories from the dashboard.
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- TOAST STATES -->
+    <section class="wireframe-section">
+      <div class="section-header">
+        <div class="section-number">4</div>
+        <h2 class="section-title">Quick Feedback States</h2>
+      </div>
+      <p class="section-desc">
+        After the main toast closes, these mini-toasts confirm the action taken.
+      </p>
+
+      <div class="states-grid">
+        <div class="state-card">
+          <div class="state-label">Saved</div>
+          <div class="mini-toast">
+            <div class="mini-toast-icon success">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="mini-toast-text">Saved to TabMind</div>
+          </div>
+        </div>
+
+        <div class="state-card">
+          <div class="state-label">Cancelled</div>
+          <div class="mini-toast">
+            <div class="mini-toast-icon" style="background: var(--text-muted);">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </div>
+            <div class="mini-toast-text">Not saved</div>
+          </div>
+        </div>
+
+        <div class="state-card">
+          <div class="state-label">Already Saved</div>
+          <div class="mini-toast">
+            <div class="mini-toast-icon info">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4M12 8h.01"/>
+              </svg>
+            </div>
+            <div class="mini-toast-text">Already in your library</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>

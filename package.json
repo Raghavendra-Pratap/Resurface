@@ -1,0 +1,32 @@
+{
+  "name": "resurface",
+  "version": "1.0.0",
+  "description": "Close tabs without fear. Save with context, resurface when relevant.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "icons": "node scripts/generate-icons.js",
+    "package": "npm run build && cd dist && zip -r ../resurface-v$npm_package_version.zip .",
+    "version:patch": "npm version patch --no-git-tag-version && npm run sync-version",
+    "version:minor": "npm version minor --no-git-tag-version && npm run sync-version",
+    "version:major": "npm version major --no-git-tag-version && npm run sync-version",
+    "sync-version": "node scripts/sync-version.js",
+    "release": "npm run sync-version && npm run package"
+  },
+  "dependencies": {
+    "idb": "^8.0.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "@types/uuid": "^9.0.8",
+    "sharp": "^0.34.5",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11",
+    "vite-plugin-web-extension": "^4.1.6",
+    "vitest": "^1.6.0"
+  }
+}

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resurface Logo Concepts</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      padding: 40px;
+      color: white;
+    }
+    
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 48px;
+      font-size: 1.1rem;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+      color: #f1f5f9;
+    }
+    
+    .card p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    
+    .icon-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .icon-row img, .icon-row object {
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .size-label {
+      font-size: 0.75rem;
+      color: #64748b;
+      text-align: center;
+      margin-top: 4px;
+    }
+    
+    .icon-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .tag {
+      display: inline-block;
+      background: rgba(6, 182, 212, 0.2);
+      color: #22d3ee;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-right: 8px;
+    }
+    
+    .tag.recommended {
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+    }
+    
+    .current {
+      opacity: 0.6;
+    }
+    
+    .current .tag {
+      background: rgba(100, 116, 139, 0.3);
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <h1>Resurface Logo Concepts</h1>
+  <p class="subtitle">Pick the one that best represents "tabs resurfacing when you need them"</p>
+  
+  <div class="grid">
+    <!-- Current Logo -->
+    <div class="card current">
+      <h2>Current: Resurface</h2>
+      <p>Simple bookmark icon. Clean but doesn't capture the "resurface" concept.</p>
+      <div class="icon-row">
+        <div class="icon-wrapper">
+          <object data="../icon.svg" type="image/svg+xml" width="128" height="128"></object>
+          <span class="size-label">128px</span>
+        </div>
+        <div class="icon-wrapper">
+          <object data="../icon.svg" type="image/svg+xml" width="48" height="48"></object>
+          <span class="size-label">48px</span>
+        </div>
+        <div class="icon-wrapper">
+          <object data="../icon.svg" type="image/svg+xml" width="32" height="32"></object>
+          <span class="size-label">32px</span>
+        </div>
+      </div>
+      <span class="tag">Current</span>
+    </div>
+    
+    <!-- Option 1 -->
+    <div class="card">
+      <h2>Option 1: Rising Tab</h2>
+      <p>A browser tab emerging upward with waves below. Directly shows the "surfacing" action.</p>
+      <div class="icon-row">
+        <div class="icon-wrapper">
+          <object data="option1-rising-tab.svg" type="image/svg+xml" width="128" height="128"></object>
+          <span class="size-label">128px</span>
+        </div>
+        <div class="icon-wrapper">
+          <object data="option1-rising-tab.svg" type="image/svg+xml" width="48" height="48"></object>
+          <span class="size-label">48px</span>
+        </div>
+        <div class="icon-wrapper">
+          <object data="option1-rising-tab.svg" type="image/svg+xml" width="32" height="32"></object>
+          <span class="size-label">32px</span>
+        </div>
+      </div>
+      <span class="tag recommended">Recommended</span>
+      <span class="tag">Action-oriented</span>
+    </div>
+    
+    <!-- Option 2 -->
+    <div class="card">
+      <h2>Option 2: Bubble Surface</h2>
+      <p>A document rising like a bubble to the surface. Teal color, friendly feel.</p>
+      <div class="icon-row">
+        <div class="icon-wrapper">
+          <object data="option2-bubble-surface.svg" type="image/svg+xml" width="128" height="128"></object>
+          <span class="size-label">128px</span>
+        </div>
+        <div class="icon-wrapper">
+          <object data="option2-bubble-surface.svg" type="image/svg+xml" width="48" height="48"></object>
+          <span class="size-label">48px</span>
+        </div>
+        <div class="icon-wrapper">
+          <object data="option2-bubble-surface.svg" type="image/svg+xml" width="32" height="32"></object>
+          <span class="size-label">32px</span>
+        </div>
+      </div>
+      <span class="tag">Friendly</span>
+      <span class="tag">Unique</span>
+    </div>
+    
+    <!-- Option 3 -->
+    <div class="card">
+      <h2>Option 3: Layered Recall</h2>
+      <p>Stacked cards with the front one highlighted. Shows saved items ready to surface.</p>
+      <div class="icon-row">
+        <div class="icon-wrapper">
+          <object data="option3-layered-recall.svg" type="image/svg+xml" width="128" height="128"></object>
+          <span class="size-label">128px</span>
+        </div>
+        <div class="icon-wrapper">
+          <object data="option3-layered-recall.svg" type="image/svg+xml" width="48" height="48"></object>
+          <span class="size-label">48px</span>
+        </div>
+        <div class="icon-wrapper">
+          <object data="option3-layered-recall.svg" type="image/svg+xml" width="32" height="32"></object>
+          <span class="size-label">32px</span>
+        </div>
+      </div>
+      <span class="tag">Professional</span>
+      <span class="tag">Clear concept</span>
+    </div>
+    
+    <!-- Option 4 -->
+    <div class="card">
+      <h2>Option 4: Minimal R + Wave</h2>
+      <p>Stylized "R" for Resurface with a subtle wave. Minimal, brand-focused.</p>
+      <div class="icon-row">
+        <div class="icon-wrapper">
+          <object data="option4-minimal-wave.svg" type="image/svg+xml" width="128" height="128"></object>
+          <span class="size-label">128px</span>
+        </div>
+        <div class="icon-wrapper">
+          <object data="option4-minimal-wave.svg" type="image/svg+xml" width="48" height="48"></object>
+          <span class="size-label">48px</span>
+        </div>
+        <div class="icon-wrapper">
+          <object data="option4-minimal-wave.svg" type="image/svg+xml" width="32" height="32"></object>
+          <span class="size-label">32px</span>
+        </div>
+      </div>
+      <span class="tag">Minimal</span>
+      <span class="tag">Brandable</span>
+    </div>
+    
+    <!-- Option 5 -->
+    <div class="card">
+      <h2>Option 5: Ocean Tab</h2>
+      <p>Document tab emerging from water with droplets. Rich, dynamic feel.</p>
+      <div class="icon-row">
+        <div class="icon-wrapper">
+          <object data="option5-ocean-tab.svg" type="image/svg+xml" width="128" height="128"></object>
+          <span class="size-label">128px</span>
+        </div>
+        <div class="icon-wrapper">
+          <object data="option5-ocean-tab.svg" type="image/svg+xml" width="48" height="48"></object>
+          <span class="size-label">48px</span>
+        </div>
+        <div class="icon-wrapper">
+          <object data="option5-ocean-tab.svg" type="image/svg+xml" width="32" height="32"></object>
+          <span class="size-label">32px</span>
+        </div>
+      </div>
+      <span class="tag">Premium</span>
+      <span class="tag">Detailed</span>
+    </div>
+  </div>
+</body>
+</html>

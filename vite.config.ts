@@ -1,0 +1,97 @@
+import { defineConfig } from 'vite';
+import webExtension from 'vite-plugin-web-extension';
+import { resolve } from 'path';
+
+export default defineConfig({
+  plugins: [
+    webExtension({
+      manifest: () => ({
+        manifest_version: 3,
+        name: 'Resurface',
+        version: '1.0.0',
+        description: 'Close tabs without fear. Save with context, resurface when relevant.',
+        
+        permissions: [
+          'storage',
+          'tabs',
+          'activeTab',
+          'scripting',
+          'history'
+        ],
+        
+        omnibox: {
+          keyword: 'rs'
+        },
+        
+        host_permissions: [
+          '<all_urls>'
+        ],
+        
+        background: {
+          service_worker: 'src/background/index.ts',
+          type: 'module'
+        },
+        
+        content_scripts: [
+          {
+            matches: ['<all_urls>'],
+            js: ['src/content/index.ts'],
+            css: ['src/content/styles.css']
+          }
+        ],
+        
+        action: {
+          default_icon: {
+            16: 'assets/icons/icon-16.png',
+            32: 'assets/icons/icon-32.png',
+            48: 'assets/icons/icon-48.png',
+            128: 'assets/icons/icon-128.png'
+          },
+          default_title: 'Resurface',
+          default_popup: 'src/popup/index.html'
+        },
+        
+        commands: {
+          'save-tab': {
+            suggested_key: {
+              default: 'Ctrl+Shift+S',
+              mac: 'Command+Shift+S'
+            },
+            description: 'Save current tab to Resurface'
+          },
+          'resurface': {
+            suggested_key: {
+              default: 'Ctrl+Shift+F',
+              mac: 'Command+Shift+F'
+            },
+            description: 'Search saved tabs'
+          }
+        },
+        
+        icons: {
+          16: 'assets/icons/icon-16.png',
+          32: 'assets/icons/icon-32.png',
+          48: 'assets/icons/icon-48.png',
+          128: 'assets/icons/icon-128.png'
+        },
+        
+        chrome_url_overrides: {
+          newtab: 'src/newtab/index.html'
+        }
+      }),
+      additionalInputs: [
+        'src/dashboard/index.html',
+        'src/newtab/index.html'
+      ]
+    })
+  ],
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src')
+    }
+  },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true
+  }
+});

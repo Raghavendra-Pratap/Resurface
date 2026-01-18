@@ -1,0 +1,33 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9"/>
+      <stop offset="100%" style="stop-color:#0284c7"/>
+    </linearGradient>
+    <linearGradient id="tabGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="128" height="128" rx="28" fill="url(#bgGrad)"/>
+  
+  <!-- Wave/surface line -->
+  <path d="M20 78 Q44 68, 64 78 T108 78" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M20 86 Q44 76, 64 86 T108 86" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Rising tab shape -->
+  <path d="M38 70 L38 42 L50 32 L78 32 L90 42 L90 70 L38 70 Z" 
+        fill="url(#tabGrad)" 
+        stroke="white" 
+        stroke-width="2"/>
+  
+  <!-- Up arrow inside tab -->
+  <path d="M64 62 L64 46 M54 54 L64 44 L74 54" 
+        fill="none" 
+        stroke="#0284c7" 
+        stroke-width="4" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Generate PNG Icons</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a1a2e;
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    h1 { color: #8b5cf6; }
+    .icons { display: flex; gap: 24px; justify-content: center; margin: 40px 0; flex-wrap: wrap; }
+    .icon-box { 
+      background: #2d2d44; 
+      padding: 20px; 
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    canvas { border-radius: 8px; background: white; }
+    button {
+      background: #8b5cf6;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover { background: #7c3aed; }
+    .instructions {
+      background: #2d2d44;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: 20px auto;
+      text-align: left;
+    }
+    code { background: #1a1a2e; padding: 2px 6px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>🎨 Generate PNG Icons</h1>
+  <p>Click each button to download the PNG at that size</p>
+  
+  <div class="icons">
+    <div class="icon-box">
+      <canvas id="c128" width="128" height="128"></canvas>
+      <span>128×128</span>
+      <button onclick="download(128)">Download</button>
+    </div>
+    <div class="icon-box">
+      <canvas id="c48" width="48" height="48"></canvas>
+      <span>48×48</span>
+      <button onclick="download(48)">Download</button>
+    </div>
+    <div class="icon-box">
+      <canvas id="c32" width="32" height="32"></canvas>
+      <span>32×32</span>
+      <button onclick="download(32)">Download</button>
+    </div>
+    <div class="icon-box">
+      <canvas id="c16" width="16" height="16"></canvas>
+      <span>16×16</span>
+      <button onclick="download(16)">Download</button>
+    </div>
+  </div>
+  
+  <div class="instructions">
+    <h3>📋 Instructions</h3>
+    <ol>
+      <li>Click each "Download" button to save the PNG</li>
+      <li>Rename the downloaded files to: <code>icon-16.png</code>, <code>icon-32.png</code>, <code>icon-48.png</code>, <code>icon-128.png</code></li>
+      <li>Replace the existing PNGs in <code>src/assets/icons/</code> and <code>public/assets/icons/</code></li>
+      <li>Run <code>npm run build</code> to update the dist folder</li>
+    </ol>
+  </div>
+
+  <script>
+    const svgContent = `<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#8b5cf6"/>
+          <stop offset="100%" style="stop-color:#7c3aed"/>
+        </linearGradient>
+      </defs>
+      <rect width="128" height="128" rx="28" fill="url(#bgGrad)"/>
+      <rect x="22" y="58" width="84" height="56" rx="8" fill="rgba(255,255,255,0.2)" transform="rotate(-3 64 86)"/>
+      <rect x="22" y="50" width="84" height="56" rx="8" fill="rgba(255,255,255,0.4)" transform="rotate(2 64 78)"/>
+      <rect x="20" y="28" width="88" height="60" rx="8" fill="white"/>
+      <line x1="32" y1="46" x2="96" y2="46" stroke="#7c3aed" stroke-width="4" stroke-linecap="round"/>
+      <line x1="32" y1="60" x2="76" y2="60" stroke="#c4b5fd" stroke-width="4" stroke-linecap="round"/>
+      <line x1="32" y1="74" x2="60" y2="74" stroke="#c4b5fd" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="98" cy="22" r="7" fill="#fbbf24"/>
+      <path d="M98 12 L98 8 M108 22 L112 22 M98 32 L98 28" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>`;
+
+    const sizes = [128, 48, 32, 16];
+    
+    function renderIcon(size) {
+      const canvas = document.getElementById('c' + size);
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      
+      img.onload = () => {
+        ctx.clearRect(0, 0, size, size);
+        ctx.drawImage(img, 0, 0, size, size);
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+    }
+    
+    function download(size) {
+      const canvas = document.getElementById('c' + size);
+      const link = document.createElement('a');
+      link.download = `icon-${size}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+    
+    // Render all sizes on load
+    sizes.forEach(renderIcon);
+  </script>
+</body>
+</html>
