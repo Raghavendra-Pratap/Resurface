@@ -11,7 +11,9 @@ import {
   createTopic,
   createIntent,
   getSettings,
-  updateSettings
+  updateSettings,
+  exportData,
+  importData
 } from './storage';
 import { generateTopics } from './topicGenerator';
 import type { Message, MessagePayloads } from '../shared/messages';
@@ -411,6 +413,14 @@ const messageHandlers: Record<string, (payload: any, sender: chrome.runtime.Mess
 
   async UPDATE_SETTINGS(payload: Partial<any>): Promise<any> {
     return updateSettings(payload);
+  },
+
+  async EXPORT_DATA(): Promise<any> {
+    return exportData();
+  },
+
+  async IMPORT_DATA(payload: MessagePayloads['IMPORT_DATA']): Promise<any> {
+    return importData(payload.data, payload.mode);
   }
 };
 

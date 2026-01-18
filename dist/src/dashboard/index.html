@@ -163,6 +163,33 @@
             Show relevant pages when typing in URL bar
           </label>
         </div>
+
+        <div class="settings-group settings-data">
+          <label class="settings-label">Data Management</label>
+          <p class="settings-hint">Export your data as a backup or import from a previous backup.</p>
+          <div class="settings-data-actions">
+            <button class="btn btn-secondary" id="btn-export-data">
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Export Backup
+            </button>
+            <button class="btn btn-secondary" id="btn-import-data">
+              <svg viewBox="0 0 24 24" width="16" height="16">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Import Backup
+            </button>
+            <input type="file" id="import-file-input" accept=".json" style="display: none;">
+          </div>
+          <div class="settings-data-stats" id="data-stats">
+            <!-- Stats will be populated by JS -->
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" id="btn-save-settings">Save Changes</button>

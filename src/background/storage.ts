@@ -1,5 +1,6 @@
 import { openDB, IDBPDatabase, DBSchema } from 'idb';
 import type { SavedItem, Topic, Intent, Settings, UUID } from '../shared/types';
+import type { BackupData } from '../shared/messages';
 import { 
   DEFAULT_INTENTS, 
   DEFAULT_TOPIC_COLORS,
@@ -7,6 +8,9 @@ import {
   STORAGE_DB_VERSION 
 } from '../shared/constants';
 import { generateId, now, getRandomColor } from '../shared/utils';
+
+// Old database name (for migration from TabMind)
+const OLD_DB_NAME = 'tabmind';
 
 // Database schema
 interface ResurfaceDB extends DBSchema {
@@ -61,29 +65,145 @@ async function ensureDb(): Promise<IDBPDatabase<ResurfaceDB>> {
 export async function initStorage(): Promise<void> {
   if (db) return; // Already initialized
   
+  // First, check if we need to migrate from old "tabmind" database
+  await migrateFromOldDatabase();
+  
   db = await openDB<ResurfaceDB>(STORAGE_DB_NAME, STORAGE_DB_VERSION, {
-    upgrade(database) {
-      // Saved items store
-      const itemsStore = database.createObjectStore('savedItems', { keyPath: 'id' });
-      itemsStore.createIndex('by-url', 'url');
-      itemsStore.createIndex('by-savedAt', 'savedAt');
-      itemsStore.createIndex('by-searchText', 'searchText');
+    upgrade(database, oldVersion, newVersion) {
+      console.log(`Resurface Storage: Upgrading DB from v${oldVersion} to v${newVersion}`);
       
-      // Topics store
-      const topicsStore = database.createObjectStore('topics', { keyPath: 'id' });
-      topicsStore.createIndex('by-name', 'name');
+      // Create stores if they don't exist (fresh install or upgrade)
+      if (!database.objectStoreNames.contains('savedItems')) {
+        const itemsStore = database.createObjectStore('savedItems', { keyPath: 'id' });
+        itemsStore.createIndex('by-url', 'url');
+        itemsStore.createIndex('by-savedAt', 'savedAt');
+        itemsStore.createIndex('by-searchText', 'searchText');
+      }
       
-      // Intents store
-      const intentsStore = database.createObjectStore('intents', { keyPath: 'id' });
-      intentsStore.createIndex('by-name', 'name');
+      if (!database.objectStoreNames.contains('topics')) {
+        const topicsStore = database.createObjectStore('topics', { keyPath: 'id' });
+        topicsStore.createIndex('by-name', 'name');
+      }
       
-      // Settings store
-      database.createObjectStore('settings', { keyPath: 'id' });
+      if (!database.objectStoreNames.contains('intents')) {
+        const intentsStore = database.createObjectStore('intents', { keyPath: 'id' });
+        intentsStore.createIndex('by-name', 'name');
+      }
+      
+      if (!database.objectStoreNames.contains('settings')) {
+        database.createObjectStore('settings', { keyPath: 'id' });
+      }
+      
+      // Future schema migrations go here:
+      // if (oldVersion < 2) { ... }
+      // if (oldVersion < 3) { ... }
     },
   });
   
   // Initialize default data
   await initDefaults();
+}
+
+/**
+ * Migrate data from old "tabmind" database to new "resurface" database
+ * This ensures users don't lose their saved data after the rebrand
+ */
+async function migrateFromOldDatabase(): Promise<void> {
+  try {
+    // Check if old database exists
+    const databases = await indexedDB.databases();
+    const oldDbExists = databases.some(db => db.name === OLD_DB_NAME);
+    
+    if (!oldDbExists) {
+      console.log('Resurface Storage: No old TabMind database found, skipping migration');
+      return;
+    }
+    
+    console.log('Resurface Storage: Found old TabMind database, starting migration...');
+    
+    // Open the old database
+    const oldDb = await openDB(OLD_DB_NAME, 1);
+    
+    // Check if new database already has data (don't overwrite)
+    let newDbHasData = false;
+    try {
+      const newDb = await openDB(STORAGE_DB_NAME, 1);
+      const existingItems = await newDb.getAll('savedItems');
+      newDbHasData = existingItems.length > 0;
+      newDb.close();
+    } catch {
+      // New database doesn't exist yet, that's fine
+    }
+    
+    if (newDbHasData) {
+      console.log('Resurface Storage: New database already has data, skipping migration');
+      oldDb.close();
+      return;
+    }
+    
+    // Read all data from old database
+    const oldItems = await oldDb.getAll('savedItems');
+    const oldTopics = await oldDb.getAll('topics');
+    const oldIntents = await oldDb.getAll('intents');
+    const oldSettings = await oldDb.get('settings', 'main');
+    
+    console.log(`Resurface Storage: Migrating ${oldItems.length} items, ${oldTopics.length} topics, ${oldIntents.length} intents`);
+    
+    // Close old database before opening new one
+    oldDb.close();
+    
+    // Open/create new database
+    const newDb = await openDB<ResurfaceDB>(STORAGE_DB_NAME, STORAGE_DB_VERSION, {
+      upgrade(database) {
+        if (!database.objectStoreNames.contains('savedItems')) {
+          const itemsStore = database.createObjectStore('savedItems', { keyPath: 'id' });
+          itemsStore.createIndex('by-url', 'url');
+          itemsStore.createIndex('by-savedAt', 'savedAt');
+          itemsStore.createIndex('by-searchText', 'searchText');
+        }
+        if (!database.objectStoreNames.contains('topics')) {
+          const topicsStore = database.createObjectStore('topics', { keyPath: 'id' });
+          topicsStore.createIndex('by-name', 'name');
+        }
+        if (!database.objectStoreNames.contains('intents')) {
+          const intentsStore = database.createObjectStore('intents', { keyPath: 'id' });
+          intentsStore.createIndex('by-name', 'name');
+        }
+        if (!database.objectStoreNames.contains('settings')) {
+          database.createObjectStore('settings', { keyPath: 'id' });
+        }
+      },
+    });
+    
+    // Copy all data to new database
+    const tx = newDb.transaction(['savedItems', 'topics', 'intents', 'settings'], 'readwrite');
+    
+    for (const item of oldItems) {
+      await tx.objectStore('savedItems').put(item);
+    }
+    for (const topic of oldTopics) {
+      await tx.objectStore('topics').put(topic);
+    }
+    for (const intent of oldIntents) {
+      await tx.objectStore('intents').put(intent);
+    }
+    if (oldSettings) {
+      await tx.objectStore('settings').put(oldSettings);
+    }
+    
+    await tx.done;
+    newDb.close();
+    
+    console.log('Resurface Storage: Migration completed successfully!');
+    
+    // Optionally delete old database after successful migration
+    // await deleteDB(OLD_DB_NAME);
+    // console.log('Resurface Storage: Old database deleted');
+    
+  } catch (error) {
+    console.error('Resurface Storage: Migration error (non-fatal):', error);
+    // Don't throw - migration failure shouldn't break the extension
+  }
 }
 
 /**
@@ -466,4 +586,139 @@ export async function updateSettings(updates: Partial<Settings>): Promise<Settin
   const updated = { ...settings, ...updates };
   await database.put('settings', updated);
   return updated;
+}
+
+// ============ EXPORT / IMPORT ============
+
+/**
+ * Export all data for backup
+ */
+export async function exportData(): Promise<BackupData> {
+  const database = await ensureDb();
+  
+  const items = await database.getAll('savedItems');
+  const topics = await database.getAll('topics');
+  const intents = await database.getAll('intents');
+  const settings = await database.get('settings', 'main');
+  
+  return {
+    version: '1.0.0',
+    exportedAt: now(),
+    items,
+    topics,
+    intents,
+    settings: settings || undefined
+  };
+}
+
+/**
+ * Import data from backup
+ * @param data - The backup data to import
+ * @param mode - 'merge' to add to existing data, 'replace' to clear and replace
+ */
+export async function importData(
+  data: BackupData, 
+  mode: 'merge' | 'replace'
+): Promise<{ success: boolean; imported: { items: number; topics: number; intents: number } }> {
+  const database = await ensureDb();
+  
+  try {
+    console.log(`Resurface Storage: Importing data in ${mode} mode`);
+    console.log(`Resurface Storage: Data contains ${data.items.length} items, ${data.topics.length} topics, ${data.intents.length} intents`);
+    
+    // Validate backup data structure
+    if (!data.items || !data.topics || !data.intents) {
+      throw new Error('Invalid backup format: missing required fields');
+    }
+    
+    let importedItems = 0;
+    let importedTopics = 0;
+    let importedIntents = 0;
+    
+    // If replacing, clear existing data first
+    if (mode === 'replace') {
+      const clearTx = database.transaction(['savedItems', 'topics', 'intents'], 'readwrite');
+      await clearTx.objectStore('savedItems').clear();
+      await clearTx.objectStore('topics').clear();
+      await clearTx.objectStore('intents').clear();
+      await clearTx.done;
+      console.log('Resurface Storage: Cleared existing data for replace mode');
+    }
+    
+    // Import topics first (items reference them)
+    for (const topic of data.topics) {
+      try {
+        if (mode === 'merge') {
+          // Check if topic with same name exists
+          const existing = await database.getFromIndex('topics', 'by-name', topic.name);
+          if (!existing) {
+            await database.add('topics', topic);
+            importedTopics++;
+          }
+        } else {
+          await database.put('topics', topic);
+          importedTopics++;
+        }
+      } catch (e) {
+        console.warn('Resurface Storage: Error importing topic:', topic.name, e);
+      }
+    }
+    
+    // Import intents
+    for (const intent of data.intents) {
+      try {
+        if (mode === 'merge') {
+          const existing = await database.getFromIndex('intents', 'by-name', intent.name);
+          if (!existing) {
+            await database.add('intents', intent);
+            importedIntents++;
+          }
+        } else {
+          await database.put('intents', intent);
+          importedIntents++;
+        }
+      } catch (e) {
+        console.warn('Resurface Storage: Error importing intent:', intent.name, e);
+      }
+    }
+    
+    // Import items
+    for (const item of data.items) {
+      try {
+        if (mode === 'merge') {
+          // Check if item with same URL exists
+          const existing = await database.getFromIndex('savedItems', 'by-url', item.url);
+          if (!existing) {
+            await database.add('savedItems', item);
+            importedItems++;
+          }
+        } else {
+          await database.put('savedItems', item);
+          importedItems++;
+        }
+      } catch (e) {
+        console.warn('Resurface Storage: Error importing item:', item.url, e);
+      }
+    }
+    
+    // Import settings if provided and in replace mode
+    if (data.settings && mode === 'replace') {
+      await database.put('settings', data.settings);
+    }
+    
+    console.log(`Resurface Storage: Import completed - ${importedItems} items, ${importedTopics} topics, ${importedIntents} intents`);
+    
+    return {
+      success: true,
+      imported: {
+        items: importedItems,
+        topics: importedTopics,
+        intents: importedIntents
+      }
+    };
+    
+  } catch (error) {
+    console.error('Resurface Storage: Import error:', error);
+    throw error;
+  }
 }

@@ -27,6 +27,8 @@ export type MessageType =
   | 'GET_SETTINGS'
   | 'UPDATE_SETTINGS'
   | 'PING'
+  | 'EXPORT_DATA'
+  | 'IMPORT_DATA'
   
   // Background -> Content
   | 'EXTRACT_PAGE'
@@ -39,6 +41,16 @@ export type MessageType =
   | 'SHOW_SEARCH_MODAL'
   | 'SEARCH_MODAL_RESULTS'
   | 'SHOW_GOOGLE_OVERLAY';
+
+// Backup data structure for export/import
+export interface BackupData {
+  version: string;
+  exportedAt: number;
+  items: SavedItem[];
+  topics: Topic[];
+  intents: Intent[];
+  settings?: Settings;
+}
 
 // Message payloads
 export interface MessagePayloads {
@@ -76,6 +88,11 @@ export interface MessagePayloads {
   GET_SETTINGS: undefined;
   UPDATE_SETTINGS: Partial<Settings>;
   PING: undefined;
+  EXPORT_DATA: undefined;
+  IMPORT_DATA: {
+    data: BackupData;
+    mode: 'merge' | 'replace';
+  };
   
   // Background -> Content
   EXTRACT_PAGE: undefined;
@@ -123,6 +140,8 @@ export interface MessageResponses {
   GET_SETTINGS: Settings;
   UPDATE_SETTINGS: Settings;
   PING: { pong: boolean };
+  EXPORT_DATA: BackupData;
+  IMPORT_DATA: { success: boolean; imported: { items: number; topics: number; intents: number } };
   EXTRACT_PAGE: PageData;
   SHOW_TOAST: ToastResult | null;
   SHOW_CONFIRMATION: void;

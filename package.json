@@ -1,6 +1,6 @@
 {
   "name": "resurface",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Close tabs without fear. Save with context, resurface when relevant.",
   "type": "module",
   "scripts": {

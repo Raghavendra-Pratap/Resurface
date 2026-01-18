@@ -1,5 +1,5 @@
 import type { SavedItem, Topic, Intent, Settings } from '../shared/types';
-import { sendToBackground } from '../shared/messages';
+import { sendToBackground, BackupData } from '../shared/messages';
 import { escapeHtml, formatRelativeTime, extractDomain } from '../shared/utils';
 
 /**
@@ -310,9 +310,20 @@ function setupEventListeners() {
   document.getElementById('btn-settings')?.addEventListener('click', () => {
     if (settingsModal) {
       updateSettingsUI();
+      updateDataStats();
       settingsModal.style.display = 'flex';
     }
   });
+
+  // Export data
+  document.getElementById('btn-export-data')?.addEventListener('click', handleExportData);
+
+  // Import data
+  document.getElementById('btn-import-data')?.addEventListener('click', () => {
+    document.getElementById('import-file-input')?.click();
+  });
+
+  document.getElementById('import-file-input')?.addEventListener('change', handleImportData);
 
   document.getElementById('btn-close-settings')?.addEventListener('click', () => {
     if (settingsModal) settingsModal.style.display = 'none';
@@ -414,6 +425,161 @@ function hexToRgba(hex: string, alpha: number): string {
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+/**
+ * Update data stats in settings modal
+ */
+function updateDataStats() {
+  const statsEl = document.getElementById('data-stats');
+  if (!statsEl) return;
+
+  const totalSize = JSON.stringify({
+    items: state.items,
+    topics: state.topics,
+    intents: state.intents
+  }).length;
+
+  const sizeKB = (totalSize / 1024).toFixed(1);
+
+  statsEl.innerHTML = `
+    <div class="stat-row">
+      <span>Saved pages</span>
+      <strong>${state.items.length}</strong>
+    </div>
+    <div class="stat-row">
+      <span>Topics</span>
+      <strong>${state.topics.length}</strong>
+    </div>
+    <div class="stat-row">
+      <span>Intents</span>
+      <strong>${state.intents.length}</strong>
+    </div>
+    <div class="stat-row">
+      <span>Data size</span>
+      <strong>${sizeKB} KB</strong>
+    </div>
+  `;
+}
+
+/**
+ * Handle export data button click
+ */
+async function handleExportData() {
+  try {
+    const data: BackupData = await sendToBackground('EXPORT_DATA');
+    
+    // Create and download JSON file
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const date = new Date().toISOString().split('T')[0];
+    const filename = `resurface-backup-${date}.json`;
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showDataMessage('success', `Exported ${data.items.length} pages, ${data.topics.length} topics, ${data.intents.length} intents`);
+    
+  } catch (error) {
+    console.error('Export error:', error);
+    showDataMessage('error', 'Failed to export data. Please try again.');
+  }
+}
+
+/**
+ * Handle import file selection
+ */
+async function handleImportData(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  
+  if (!file) return;
+  
+  try {
+    const text = await file.text();
+    const data: BackupData = JSON.parse(text);
+    
+    // Validate the data structure
+    if (!data.items || !data.topics || !data.intents) {
+      throw new Error('Invalid backup file format');
+    }
+    
+    // Ask user for import mode
+    const mode = confirm(
+      `Found ${data.items.length} pages, ${data.topics.length} topics, ${data.intents.length} intents.\n\n` +
+      `Click OK to MERGE with existing data (keeps your current pages).\n` +
+      `Click Cancel to REPLACE all data (removes current pages).`
+    ) ? 'merge' : 'replace';
+    
+    // Confirm if replacing
+    if (mode === 'replace') {
+      const confirmReplace = confirm(
+        '⚠️ WARNING: This will DELETE all your current saved pages and replace them with the backup.\n\n' +
+        'Are you sure you want to continue?'
+      );
+      if (!confirmReplace) {
+        input.value = '';
+        return;
+      }
+    }
+    
+    const result = await sendToBackground('IMPORT_DATA', { data, mode });
+    
+    if (result.success) {
+      showDataMessage('success', 
+        `Imported ${result.imported.items} pages, ${result.imported.topics} topics, ${result.imported.intents} intents`
+      );
+      
+      // Reload data and refresh UI
+      await loadData();
+      renderSidebar();
+      renderItems();
+      updateDataStats();
+    } else {
+      throw new Error('Import failed');
+    }
+    
+  } catch (error) {
+    console.error('Import error:', error);
+    showDataMessage('error', 'Failed to import data. Make sure you selected a valid Resurface backup file.');
+  }
+  
+  // Reset file input
+  input.value = '';
+}
+
+/**
+ * Show a message in the data management section
+ */
+function showDataMessage(type: 'success' | 'error', message: string) {
+  const container = document.querySelector('.settings-data-actions');
+  if (!container) return;
+  
+  // Remove any existing message
+  const existing = container.parentElement?.querySelector('.data-message');
+  existing?.remove();
+  
+  const messageEl = document.createElement('div');
+  messageEl.className = `data-message ${type}`;
+  messageEl.innerHTML = `
+    <svg viewBox="0 0 24 24">
+      ${type === 'success' 
+        ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+        : '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'}
+    </svg>
+    <span>${escapeHtml(message)}</span>
+  `;
+  
+  container.parentElement?.appendChild(messageEl);
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => messageEl.remove(), 5000);
 }
 
 // Initialize when DOM is ready
