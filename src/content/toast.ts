@@ -249,7 +249,7 @@ function setupEventHandlers(container: HTMLElement, data: ToastData): void {
       // Enter saves (unless user is in input field without Cmd/Ctrl)
       if (!isTyping || e.metaKey || e.ctrlKey) {
         e.preventDefault();
-        save();
+      save();
       }
     }
   }

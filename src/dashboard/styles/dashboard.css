@@ -858,3 +858,95 @@ body {
   stroke-width: 2;
   fill: none;
 }
+
+/* New Tab Settings */
+.settings-newtab {
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+}
+
+.settings-sublabel {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.shortcuts-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.custom-links-list {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.custom-link-item {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.custom-link-item input {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.custom-link-item input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.custom-link-name {
+  flex: 1.2;
+}
+
+.custom-link-url {
+  flex: 2;
+}
+
+.custom-link-icon {
+  flex: 1;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-icon:hover {
+  background: var(--bg-card-hover);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn-icon svg {
+  width: 16px;
+  height: 16px;
+}

@@ -1,4 +1,4 @@
-import type { SavedItem, Topic, Intent } from '../shared/types';
+import type { SavedItem, Topic, Intent, Settings } from '../shared/types';
 import { sendToBackground } from '../shared/messages';
 
 interface FormattedItem {
@@ -26,6 +26,7 @@ let allTopics: Topic[] = [];
 let allIntents: Intent[] = [];
 let currentResults: FormattedItem[] = [];
 let currentHistory: HistoryItem[] = [];
+let settings: Settings | null = null;
 
 // Navigation state: 'none' = search box, 'history' = in history, 'saved' = in saved items
 let selectedSection: 'none' | 'history' | 'saved' = 'none';
@@ -34,8 +35,9 @@ let selectedIndex = -1; // Index within the selected section
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
   await loadData();
+  await loadSettings();
+  applySettings();
   setupEventListeners();
-  updateStats();
   updateShortcutHints();
   updateTrayHeights();
   
@@ -52,8 +54,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 function updateTrayHeights() {
   const viewportHeight = window.innerHeight;
   const searchBoxHeight = 80; // Approximate search box height
-  const logoHeight = 120; // Logo + spacing
-  const bottomSpace = 280; // Quick links + stats + hints
+  const logoHeight = 140; // Logo + spacing (top: 60px + logo ~80px)
+  const bottomSpace = 180; // Quick links + hints (no stats)
   
   // Calculate available space for trays
   const availableSpace = viewportHeight - logoHeight - searchBoxHeight - bottomSpace;
@@ -69,6 +71,152 @@ function updateTrayHeights() {
   if (resultsTray) {
     resultsTray.style.maxHeight = `${maxTrayHeight}px`;
   }
+}
+
+/**
+ * Load settings from background
+ */
+async function loadSettings() {
+  try {
+    settings = await sendToBackground('GET_SETTINGS', undefined);
+  } catch (error) {
+    console.error('Error loading settings:', error);
+  }
+}
+
+/**
+ * Apply settings to the new tab page
+ */
+function applySettings() {
+  if (!settings) return;
+  
+  // Show/hide logo
+  const logo = document.getElementById('newtab-logo');
+  if (logo) {
+    logo.style.display = settings.newTabShowLogo !== false ? 'flex' : 'none';
+  }
+  
+  // Filter and render shortcuts
+  renderShortcuts();
+}
+
+/**
+ * Render shortcuts based on settings
+ */
+function renderShortcuts() {
+  const quickLinksContainer = document.getElementById('quick-links');
+  if (!quickLinksContainer || !settings) return;
+  
+  quickLinksContainer.innerHTML = '';
+  
+  // Define all available shortcuts
+  const allShortcuts: Record<string, { name: string; url: string; icon: string; className: string }> = {
+    gemini: { name: 'Gemini', url: 'https://gemini.google.com', icon: 'gemini', className: 'gemini' },
+    gmail: { name: 'Gmail', url: 'https://mail.google.com', icon: 'gmail', className: 'gmail' },
+    drive: { name: 'Drive', url: 'https://drive.google.com', icon: 'drive', className: 'drive' },
+    docs: { name: 'Docs', url: 'https://docs.google.com', icon: 'docs', className: 'docs' },
+    sheets: { name: 'Sheets', url: 'https://sheets.google.com', icon: 'sheets', className: 'sheets' },
+    slides: { name: 'Slides', url: 'https://slides.google.com', icon: 'slides', className: 'slides' },
+    youtube: { name: 'YouTube', url: 'https://youtube.com', icon: 'youtube', className: 'youtube' },
+    maps: { name: 'Maps', url: 'https://maps.google.com', icon: 'maps', className: 'maps' },
+    calendar: { name: 'Calendar', url: 'https://calendar.google.com', icon: 'calendar', className: 'calendar' },
+    translate: { name: 'Translate', url: 'https://translate.google.com', icon: 'translate', className: 'translate' }
+  };
+  
+  // Add enabled shortcuts
+  const enabled = settings.newTabEnabledShortcuts || [];
+  enabled.forEach(shortcutId => {
+    const shortcut = allShortcuts[shortcutId];
+    if (shortcut) {
+      const link = createShortcutLink(shortcut.name, shortcut.url, shortcut.className);
+      quickLinksContainer.appendChild(link);
+    }
+  });
+  
+  // Add custom links
+  const customLinks = settings.newTabCustomLinks || [];
+  customLinks.forEach(customLink => {
+    const link = createCustomLink(customLink);
+    quickLinksContainer.appendChild(link);
+  });
+}
+
+/**
+ * Create a shortcut link element
+ */
+function createShortcutLink(name: string, url: string, className: string): HTMLElement {
+  const link = document.createElement('a');
+  link.href = url;
+  link.className = 'newtab-quick-link';
+  link.title = name;
+  
+  const iconDiv = document.createElement('div');
+  iconDiv.className = `newtab-quick-icon ${className}`;
+  
+  // Use existing SVG icons based on className
+  const svg = getShortcutIcon(className);
+  iconDiv.innerHTML = svg;
+  
+  const label = document.createElement('span');
+  label.textContent = name;
+  
+  link.appendChild(iconDiv);
+  link.appendChild(label);
+  
+  return link;
+}
+
+/**
+ * Create a custom link element
+ */
+function createCustomLink(customLink: { name: string; url: string; icon?: string }): HTMLElement {
+  const link = document.createElement('a');
+  link.href = customLink.url;
+  link.className = 'newtab-quick-link';
+  link.title = customLink.name;
+  
+  const iconDiv = document.createElement('div');
+  iconDiv.className = 'newtab-quick-icon custom';
+  
+  if (customLink.icon) {
+    // If icon is an emoji or special identifier
+    if (customLink.icon.length <= 2 || customLink.icon.startsWith('http')) {
+      iconDiv.textContent = customLink.icon;
+    } else {
+      iconDiv.innerHTML = customLink.icon;
+    }
+  } else {
+    // Default icon (first letter)
+    iconDiv.textContent = customLink.name.charAt(0).toUpperCase();
+  }
+  
+  const label = document.createElement('span');
+  label.textContent = customLink.name;
+  
+  link.appendChild(iconDiv);
+  link.appendChild(label);
+  
+  return link;
+}
+
+/**
+ * Get SVG icon for shortcut
+ */
+function getShortcutIcon(className: string): string {
+  const icons: Record<string, string> = {
+    gemini: '<svg viewBox="0 0 24 24"><path d="M12 2L2 12l10 10 10-10L12 2zm0 3.5L18.5 12 12 18.5 5.5 12 12 5.5z" fill="currentColor"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>',
+    gmail: '<svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/></svg>',
+    drive: '<svg viewBox="0 0 24 24"><path d="M7.71 3.5L1.15 15l3.43 6h13.71l3.43-6L15.15 3.5H7.71zm.79 1.5h5.57l5.15 9h-5.57l-5.15-9zm-1.58 9.5L2.73 15l2.29 4h10.58l-2.29-4H6.92z" fill="currentColor"/></svg>',
+    docs: '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M14 2v6h6" stroke="currentColor" stroke-width="2" fill="none"/><line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="2"/><line x1="8" y1="17" x2="13" y2="17" stroke="currentColor" stroke-width="2"/></svg>',
+    sheets: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="2"/><line x1="3" y1="15" x2="21" y2="15" stroke="currentColor" stroke-width="2"/><line x1="9" y1="3" x2="9" y2="21" stroke="currentColor" stroke-width="2"/></svg>',
+    slides: '<svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><polygon points="10,9 10,15 15,12" fill="currentColor"/></svg>',
+    youtube: '<svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" fill="currentColor"/></svg>',
+    maps: '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/></svg>',
+    calendar: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/></svg>',
+    translate: '<svg viewBox="0 0 24 24"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" fill="currentColor"/></svg>'
+  };
+  
+  return icons[className] || '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/></svg>';
 }
 
 /**
@@ -88,6 +236,7 @@ async function updateShortcutHints() {
     const searchShortcut = searchCommand?.shortcut || 'Not set';
     
     hintsContainer.innerHTML = `
+      <button id="open-dashboard-btn" class="newtab-dashboard-btn">Open Dashboard</button>
       <span class="newtab-hint-item" title="Click to customize">
         ${formatShortcut(saveShortcut)} Save current tab
       </span>
@@ -98,6 +247,14 @@ async function updateShortcutHints() {
         Customize shortcuts
       </a>
     `;
+    
+    // Add dashboard button handler
+    const dashboardBtn = document.getElementById('open-dashboard-btn');
+    if (dashboardBtn) {
+      dashboardBtn.addEventListener('click', () => {
+        window.location.href = chrome.runtime.getURL('src/dashboard/index.html');
+      });
+    }
     
     // Handle click on customize (can't open chrome:// directly, show instructions)
     const customizeLink = document.getElementById('customize-shortcuts');
@@ -307,10 +464,14 @@ function setupEventListeners() {
   const searchInput = document.getElementById('search-input') as HTMLInputElement;
   const resultsTray = document.getElementById('results-tray') as HTMLElement;
   const historyTray = document.getElementById('history-tray') as HTMLElement;
-  const openDashboard = document.getElementById('open-dashboard') as HTMLAnchorElement;
+  const openDashboardBtn = document.getElementById('open-dashboard-btn') as HTMLButtonElement;
   
-  // Set dashboard URL
-  openDashboard.href = chrome.runtime.getURL('src/dashboard/index.html');
+  // Set dashboard button click handler
+  if (openDashboardBtn) {
+    openDashboardBtn.addEventListener('click', () => {
+      window.location.href = chrome.runtime.getURL('src/dashboard/index.html');
+    });
+  }
   
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
   
@@ -702,16 +863,7 @@ function updateSelection(
   }
 }
 
-/**
- * Update stats display
- */
-function updateStats() {
-  const statTotal = document.getElementById('stat-total') as HTMLElement;
-  const statTopics = document.getElementById('stat-topics') as HTMLElement;
-  
-  statTotal.textContent = String(allItems.length);
-  statTopics.textContent = String(allTopics.length);
-}
+// Stats section removed from new tab
 
 /**
  * Extract domain from URL
