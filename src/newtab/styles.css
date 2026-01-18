@@ -458,25 +458,43 @@ body {
 /* Quick Links */
 .newtab-quick-links {
   display: flex !important;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 6px;
   margin-top: 32px;
   margin-bottom: 24px;
   flex-wrap: nowrap;
   overflow-x: auto;
+  overflow-y: hidden;
   padding: 8px 0;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
   width: 100%;
   max-width: 100%;
   visibility: visible !important;
   opacity: 1 !important;
   position: relative;
   z-index: 1;
+  /* Show scrollbar for better UX */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  -ms-overflow-style: auto; /* IE/Edge */
 }
 
 .newtab-quick-links::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  height: 6px;
+  display: block; /* Chrome/Safari */
+}
+
+.newtab-quick-links::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.newtab-quick-links::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.newtab-quick-links::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .newtab-quick-link {
