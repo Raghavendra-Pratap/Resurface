@@ -248,9 +248,9 @@ body {
 .newtab-history-item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px;
-  border-radius: 12px;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.15s;
   border: 1px solid transparent;
