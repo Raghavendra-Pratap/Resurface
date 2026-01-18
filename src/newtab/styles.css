@@ -195,7 +195,7 @@ body {
 /* History Tray (above search) */
 .newtab-history-tray {
   position: absolute;
-  bottom: calc(50vh + 50px); /* Position above search box (search box is centered at 50vh) */
+  bottom: calc(50vh + 45px); /* Position above search box (search box center is at 50vh, box is ~80px tall) */
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -324,7 +324,7 @@ body {
 /* Results Tray (below search) */
 .newtab-results-tray {
   position: absolute;
-  top: calc(50vh + 50px); /* Position below search box (search box is centered at 50vh) */
+  top: calc(50vh + 45px); /* Position below search box (search box center is at 50vh, box is ~80px tall) */
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
