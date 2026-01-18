@@ -5,6 +5,15 @@ All notable changes to Resurface will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2026-01-18
+
+### Added
+- Pre-populated default pages for new users:
+  - Gmail, YouTube, Drive, Maps, Calendar, Translate, News, Images
+- New users see content immediately instead of a blank page
+- Search for "gmail", "youtube", etc. now shows saved Google services
+- "Quick Access" and "Google" topics created automatically
+
 ## [1.0.4] - 2026-01-18
 
 ### Changed
