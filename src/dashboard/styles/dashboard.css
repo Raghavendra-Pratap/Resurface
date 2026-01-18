@@ -42,17 +42,22 @@ body {
 .sidebar {
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border);
-  padding: 24px;
   display: flex;
   flex-direction: column;
   position: sticky;
   top: 0;
   height: 100vh;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .sidebar-header {
-  margin-bottom: 32px;
+  padding: 24px 24px 24px 24px;
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .logo {
@@ -87,6 +92,9 @@ body {
 /* Navigation */
 .sidebar-nav {
   flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  min-height: 0;
 }
 
 .nav-section {
@@ -593,9 +601,13 @@ body {
 
 /* Sidebar Footer */
 .sidebar-footer {
-  padding-top: 24px;
+  padding: 24px;
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
   border-top: 1px solid var(--border);
-  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
 /* Modals */
