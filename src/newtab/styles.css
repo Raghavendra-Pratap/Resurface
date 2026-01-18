@@ -459,30 +459,25 @@ body {
 .newtab-quick-links {
   display: flex;
   justify-content: center;
-  gap: 6px;
-  margin-top: 32px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  gap: 4px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  max-width: 100%;
   padding: 8px 0;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-}
-
-.newtab-quick-links::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  width: 100%;
 }
 
 .newtab-quick-link {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 12px 14px;
-  border-radius: 12px;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
   text-decoration: none;
   color: var(--text-secondary);
   transition: all 0.2s ease;
-  min-width: 68px;
+  min-width: 60px;
   flex-shrink: 0;
 }
 
@@ -497,9 +492,9 @@ body {
 }
 
 .newtab-quick-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -507,13 +502,14 @@ body {
 }
 
 .newtab-quick-icon svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 
 .newtab-quick-link span {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 /* Google service colors */
@@ -859,5 +855,50 @@ body {
   
   .newtab-hints {
     display: none;
+  }
+  
+  .newtab-quick-links {
+    gap: 3px;
+    margin-top: 16px;
+  }
+  
+  .newtab-quick-link {
+    padding: 8px 10px;
+    min-width: 56px;
+  }
+  
+  .newtab-quick-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .newtab-quick-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .newtab-quick-link span {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .newtab-quick-links {
+    gap: 2px;
+  }
+  
+  .newtab-quick-link {
+    padding: 8px;
+    min-width: 52px;
+  }
+  
+  .newtab-quick-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .newtab-quick-icon svg {
+    width: 16px;
+    height: 16px;
   }
 }
