@@ -37,10 +37,39 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupEventListeners();
   updateStats();
   updateShortcutHints();
+  updateTrayHeights();
+  
+  // Update heights on window resize
+  window.addEventListener('resize', updateTrayHeights);
   
   // Aggressive focus on search input (Chrome tries to focus URL bar)
   focusSearchInput();
 });
+
+/**
+ * Update tray heights based on viewport size
+ */
+function updateTrayHeights() {
+  const viewportHeight = window.innerHeight;
+  const searchBoxHeight = 80; // Approximate search box height
+  const logoHeight = 120; // Logo + spacing
+  const bottomSpace = 280; // Quick links + stats + hints
+  
+  // Calculate available space for trays
+  const availableSpace = viewportHeight - logoHeight - searchBoxHeight - bottomSpace;
+  const maxTrayHeight = Math.max(200, Math.min(400, availableSpace / 2));
+  
+  const historyTray = document.getElementById('history-tray');
+  const resultsTray = document.getElementById('results-tray');
+  
+  if (historyTray) {
+    historyTray.style.maxHeight = `${maxTrayHeight}px`;
+  }
+  
+  if (resultsTray) {
+    resultsTray.style.maxHeight = `${maxTrayHeight}px`;
+  }
+}
 
 /**
  * Update keyboard shortcut hints from Chrome commands

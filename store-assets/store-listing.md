@@ -7,7 +7,9 @@ Resurface
 Close tabs without fear. Save pages with context and resurface them when you search for related topics.
 
 ## Category
-Productivity
+Tools (under PRODUCTIVITY section)
+
+Note: "Productivity" is a header in Chrome Web Store, not a selectable category. "Tools" is the best fit for Resurface.
 
 ## Language
 English
