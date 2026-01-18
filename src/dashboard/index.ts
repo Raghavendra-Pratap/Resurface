@@ -67,21 +67,41 @@ function renderSidebar() {
   // Render topics
   const topicsList = document.getElementById('topics-list')!;
   topicsList.innerHTML = state.topics.map(topic => `
-    <button class="nav-item" data-filter-type="topic" data-filter-id="${topic.id}">
-      <span class="nav-color-dot" style="background: ${topic.color};"></span>
-      <span>${escapeHtml(topic.name)}</span>
-      <span class="nav-count">${topic.itemCount}</span>
-    </button>
+    <div class="nav-item-wrapper" data-topic-id="${topic.id}">
+      <button class="nav-item" data-filter-type="topic" data-filter-id="${topic.id}">
+        <span class="nav-color-dot" style="background: ${topic.color};"></span>
+        <span>${escapeHtml(topic.name)}</span>
+        <span class="nav-count">${topic.itemCount}</span>
+      </button>
+      <div class="nav-item-actions">
+        <button class="nav-action-btn edit" data-action="edit-topic" title="Edit">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="nav-action-btn delete" data-action="delete-topic" title="Delete">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </div>
   `).join('');
   
   // Render intents
   const intentsList = document.getElementById('intents-list')!;
   intentsList.innerHTML = state.intents.map(intent => `
-    <button class="nav-item" data-filter-type="intent" data-filter-id="${intent.id}">
-      <span>${intent.emoji}</span>
-      <span>${escapeHtml(intent.name)}</span>
-      <span class="nav-count">${intent.itemCount}</span>
-    </button>
+    <div class="nav-item-wrapper" data-intent-id="${intent.id}">
+      <button class="nav-item" data-filter-type="intent" data-filter-id="${intent.id}">
+        <span>${intent.emoji}</span>
+        <span>${escapeHtml(intent.name)}</span>
+        <span class="nav-count">${intent.itemCount}</span>
+      </button>
+      <div class="nav-item-actions">
+        <button class="nav-action-btn edit" data-action="edit-intent" title="Edit">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="nav-action-btn delete" data-action="delete-intent" title="Delete">
+          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </div>
   `).join('');
 }
 
@@ -215,17 +235,74 @@ function setupEventListeners() {
     });
   });
   
-  // Topic/Intent filters (delegated)
-  document.getElementById('topics-list')?.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest('.nav-item');
+  // Topic/Intent filters and actions (delegated)
+  document.getElementById('topics-list')?.addEventListener('click', async (e) => {
+    const target = e.target as HTMLElement;
+    const actionBtn = target.closest('.nav-action-btn') as HTMLElement;
+    const wrapper = target.closest('.nav-item-wrapper') as HTMLElement;
+    
+    if (actionBtn && wrapper) {
+      e.stopPropagation();
+      const topicId = wrapper.dataset.topicId!;
+      const action = actionBtn.dataset.action;
+      const topic = state.topics.find(t => t.id === topicId);
+      
+      if (action === 'edit-topic' && topic) {
+        const newName = prompt('Edit topic name:', topic.name);
+        if (newName?.trim() && newName.trim() !== topic.name) {
+          await sendToBackground('RENAME_TOPIC', { id: topicId, name: newName.trim() });
+          await loadData();
+          renderSidebar();
+        }
+      } else if (action === 'delete-topic') {
+        if (confirm(`Delete topic "${topic?.name}"? Items will be untagged from this topic.`)) {
+          await sendToBackground('DELETE_TOPIC', { id: topicId });
+          await loadData();
+          renderSidebar();
+          renderItems();
+        }
+      }
+      return;
+    }
+    
+    const btn = target.closest('.nav-item');
     if (btn) {
       const id = btn.getAttribute('data-filter-id')!;
       setFilter({ type: 'topic', id });
     }
   });
   
-  document.getElementById('intents-list')?.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest('.nav-item');
+  document.getElementById('intents-list')?.addEventListener('click', async (e) => {
+    const target = e.target as HTMLElement;
+    const actionBtn = target.closest('.nav-action-btn') as HTMLElement;
+    const wrapper = target.closest('.nav-item-wrapper') as HTMLElement;
+    
+    if (actionBtn && wrapper) {
+      e.stopPropagation();
+      const intentId = wrapper.dataset.intentId!;
+      const action = actionBtn.dataset.action;
+      const intent = state.intents.find(i => i.id === intentId);
+      
+      if (action === 'edit-intent' && intent) {
+        const newName = prompt('Edit intent name:', intent.name);
+        if (newName?.trim() && newName.trim() !== intent.name) {
+          const newEmoji = prompt('Edit emoji:', intent.emoji) || intent.emoji;
+          await sendToBackground('RENAME_INTENT', { id: intentId, name: newName.trim(), emoji: newEmoji });
+          await loadData();
+          renderSidebar();
+        }
+      } else if (action === 'delete-intent') {
+        if (confirm(`Delete intent "${intent?.name}"? Items will be untagged from this intent.`)) {
+          await sendToBackground('DELETE_INTENT', { id: intentId });
+          await loadData();
+          renderSidebar();
+          renderItems();
+        }
+      }
+      return;
+    }
+    
+    const btn = target.closest('.nav-item');
     if (btn) {
       const id = btn.getAttribute('data-filter-id')!;
       setFilter({ type: 'intent', id });

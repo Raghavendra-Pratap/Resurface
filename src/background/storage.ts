@@ -643,13 +643,25 @@ export async function getAllIntents(): Promise<Intent[]> {
 }
 
 /**
- * Create a new intent
+ * Create a new intent (or return existing if name matches case-insensitively)
  */
 export async function createIntent(name: string, emoji: string): Promise<Intent> {
   const database = await ensureDb();
+  const normalizedName = name.trim();
+  
+  // Check for existing intent with same name (case-insensitive)
+  const allIntents = await database.getAll('intents');
+  const existing = allIntents.find(
+    i => i.name.toLowerCase() === normalizedName.toLowerCase()
+  );
+  
+  if (existing) {
+    return existing;
+  }
+  
   const newIntent: Intent = {
     id: generateId(),
-    name: name.trim(),
+    name: normalizedName,
     emoji,
     createdAt: now(),
     itemCount: 0
@@ -691,6 +703,20 @@ export async function deleteIntent(id: UUID): Promise<boolean> {
   
   await database.delete('intents', id);
   return true;
+}
+
+/**
+ * Rename an intent
+ */
+export async function renameIntent(id: UUID, newName: string, newEmoji: string): Promise<Intent | null> {
+  const database = await ensureDb();
+  const intent = await database.get('intents', id);
+  if (!intent) return null;
+  
+  intent.name = newName.trim();
+  intent.emoji = newEmoji;
+  await database.put('intents', intent);
+  return intent;
 }
 
 // ============ SETTINGS ============

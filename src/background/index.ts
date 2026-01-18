@@ -10,6 +10,10 @@ import {
   updateItem,
   createTopic,
   createIntent,
+  renameTopic,
+  deleteTopic,
+  renameIntent,
+  deleteIntent,
   getSettings,
   updateSettings,
   exportData,
@@ -359,6 +363,22 @@ const messageHandlers: Record<string, (payload: any, sender: chrome.runtime.Mess
   
   async CREATE_INTENT(payload: MessagePayloads['CREATE_INTENT']) {
     return createIntent(payload.name, payload.emoji);
+  },
+
+  async RENAME_TOPIC(payload: MessagePayloads['RENAME_TOPIC']) {
+    return renameTopic(payload.id, payload.name);
+  },
+
+  async DELETE_TOPIC(payload: MessagePayloads['DELETE_TOPIC']) {
+    return deleteTopic(payload.id);
+  },
+
+  async RENAME_INTENT(payload: MessagePayloads['RENAME_INTENT']) {
+    return renameIntent(payload.id, payload.name, payload.emoji);
+  },
+
+  async DELETE_INTENT(payload: MessagePayloads['DELETE_INTENT']) {
+    return deleteIntent(payload.id);
   },
   
   async URL_INPUT(payload: MessagePayloads['URL_INPUT'], sender): Promise<void> {

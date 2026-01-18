@@ -175,6 +175,69 @@ body {
   flex-shrink: 0;
 }
 
+/* Editable nav items */
+.nav-item-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nav-item-wrapper .nav-item {
+  flex: 1;
+}
+
+.nav-item-actions {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  gap: 2px;
+  background: var(--bg-sidebar);
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.nav-item-wrapper:hover .nav-item-actions {
+  display: flex;
+}
+
+.nav-item-wrapper:hover .nav-count {
+  display: none;
+}
+
+.nav-action-btn {
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: var(--bg-card);
+  border-radius: 4px;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.nav-action-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+.nav-action-btn.delete:hover {
+  color: var(--danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.nav-action-btn svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
 /* Main Content */
 .main {
   padding: 24px 32px;

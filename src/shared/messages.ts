@@ -21,6 +21,10 @@ export type MessageType =
   | 'UPDATE_ITEM'
   | 'CREATE_TOPIC'
   | 'CREATE_INTENT'
+  | 'RENAME_TOPIC'
+  | 'DELETE_TOPIC'
+  | 'RENAME_INTENT'
+  | 'DELETE_INTENT'
   | 'URL_INPUT'
   | 'PAGE_DATA_RESPONSE'
   | 'TRIGGER_SAVE'
@@ -80,6 +84,21 @@ export interface MessagePayloads {
     name: string;
     emoji: string;
   };
+  RENAME_TOPIC: {
+    id: string;
+    name: string;
+  };
+  DELETE_TOPIC: {
+    id: string;
+  };
+  RENAME_INTENT: {
+    id: string;
+    name: string;
+    emoji: string;
+  };
+  DELETE_INTENT: {
+    id: string;
+  };
   URL_INPUT: {
     query: string;
   };
@@ -134,6 +153,10 @@ export interface MessageResponses {
   UPDATE_ITEM: SavedItem;
   CREATE_TOPIC: Topic;
   CREATE_INTENT: Intent;
+  RENAME_TOPIC: Topic | null;
+  DELETE_TOPIC: boolean;
+  RENAME_INTENT: Intent | null;
+  DELETE_INTENT: boolean;
   URL_INPUT: void;
   PAGE_DATA_RESPONSE: void;
   TRIGGER_SAVE: void;
