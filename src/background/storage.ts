@@ -284,35 +284,15 @@ async function initDefaults(): Promise<void> {
   }
   
   // Check if settings exist
-  const existingSettings = await database.get('settings', 'main') as Settings | undefined;
+  const existingSettings = await database.get('settings', 'main');
   if (!existingSettings) {
     await database.add('settings', {
       id: 'main',
       keyboardShortcut: 'Cmd+Shift+S',
       autoSaveDelay: 5000,
       showResurfaceDropdown: true,
-      defaultIntentId: null,
-      newTabShowLogo: true,
-      newTabEnabledShortcuts: ['gemini', 'gmail', 'drive', 'docs', 'sheets', 'slides', 'youtube', 'maps', 'calendar', 'translate'],
-      newTabCustomLinks: []
+      defaultIntentId: null
     });
-  } else {
-    // Migrate existing settings to include new tab settings
-    const needsUpdate = !('newTabShowLogo' in existingSettings);
-    if (needsUpdate) {
-      const oldSettings = existingSettings as any;
-      const updatedSettings: Settings = {
-        id: oldSettings.id || 'main',
-        keyboardShortcut: oldSettings.keyboardShortcut || 'Cmd+Shift+S',
-        autoSaveDelay: oldSettings.autoSaveDelay || 5000,
-        showResurfaceDropdown: oldSettings.showResurfaceDropdown !== false,
-        defaultIntentId: oldSettings.defaultIntentId || null,
-        newTabShowLogo: true,
-        newTabEnabledShortcuts: ['gemini', 'gmail', 'drive', 'docs', 'sheets', 'slides', 'youtube', 'maps', 'calendar', 'translate'],
-        newTabCustomLinks: []
-      };
-      await database.put('settings', updatedSettings);
-    }
   }
   
   // Check if saved items exist - if not, add default Google services
