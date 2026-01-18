@@ -111,7 +111,7 @@ function getResultsHTML(items: DropdownItem[]): string {
  */
 function getResultItemHTML(item: DropdownItem, index: number): string {
   const faviconContent = item.favicon
-    ? `<img src="${escapeHtml(item.favicon)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${item.domain[0].toUpperCase()}'">`
+    ? `<img src="${escapeHtml(item.favicon)}" alt="" data-fallback="${item.domain[0].toUpperCase()}">`
     : item.domain[0].toUpperCase();
   
   return `
@@ -257,6 +257,19 @@ function setupEventHandlers(modal: HTMLElement): void {
   function updateResults(items: DropdownItem[]) {
     if (resultsContainer) {
       resultsContainer.innerHTML = getResultsHTML(items);
+      
+      // Setup image error handlers (CSP compliant)
+      resultsContainer.querySelectorAll('img[data-fallback]').forEach((img) => {
+        const image = img as HTMLImageElement;
+        image.addEventListener('error', function() {
+          const fallback = this.getAttribute('data-fallback') || '';
+          this.style.display = 'none';
+          const parent = this.parentElement;
+          if (parent && !parent.textContent?.trim()) {
+            parent.textContent = fallback;
+          }
+        });
+      });
       selectedIndex = 0;
       
       // Update count

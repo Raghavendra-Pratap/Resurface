@@ -418,6 +418,23 @@ function setupEventListeners() {
 /**
  * Check if string is a URL
  */
+/**
+ * Setup image error handlers (CSP compliant)
+ */
+function setupImageErrorHandlers(container: HTMLElement) {
+  container.querySelectorAll('img[data-fallback]').forEach((img) => {
+    const image = img as HTMLImageElement;
+    image.addEventListener('error', function() {
+      const fallback = this.getAttribute('data-fallback') || '';
+      this.style.display = 'none';
+      const parent = this.parentElement;
+      if (parent && !parent.textContent?.trim()) {
+        parent.textContent = fallback;
+      }
+    });
+  });
+}
+
 function isUrl(str: string): boolean {
   // Check if it looks like a URL
   if (str.includes(' ')) return false;
@@ -532,6 +549,7 @@ async function searchAndDisplay(query: string) {
       // DOM order: oldest at top, most recent at bottom
       const reversedForDisplay = [...currentHistory].reverse();
       historyList.innerHTML = reversedForDisplay.map((item, index) => getHistoryHTML(item, index)).join('');
+      setupImageErrorHandlers(historyList);
       historyTray.classList.add('visible');
       
       // Scroll history list to bottom so most recent items are visible
@@ -570,6 +588,7 @@ async function searchAndDisplay(query: string) {
     
     resultsCount.textContent = String(matches.length);
     resultsList.innerHTML = currentResults.map((item, index) => getResultHTML(item, index)).join('');
+    setupImageErrorHandlers(resultsList);
     resultsHeader.style.display = 'flex';
     resultsTray.classList.add('visible');
   } else {
@@ -619,7 +638,7 @@ function getHistoryHTML(item: HistoryItem, index: number): string {
  */
 function getResultHTML(item: FormattedItem, index: number): string {
   const faviconContent = item.favicon
-    ? `<img src="${escapeHtml(item.favicon)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${item.domain[0].toUpperCase()}'">`
+    ? `<img src="${escapeHtml(item.favicon)}" alt="" data-fallback="${item.domain[0].toUpperCase()}">`
     : item.domain[0].toUpperCase();
   
   return `

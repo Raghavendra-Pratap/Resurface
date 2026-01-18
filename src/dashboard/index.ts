@@ -184,9 +184,9 @@ function renderItems() {
         </div>
         
         <div class="item-card-header">
-          <div class="item-favicon">
+          <div class="item-favicon" data-fallback="${domain[0].toUpperCase()}">
             ${item.favicon 
-              ? `<img src="${escapeHtml(item.favicon)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${domain[0].toUpperCase()}'">` 
+              ? `<img src="${escapeHtml(item.favicon)}" alt="" data-fallback="${domain[0].toUpperCase()}">` 
               : domain[0].toUpperCase()
             }
           </div>
@@ -221,6 +221,19 @@ function renderItems() {
       </div>
     `;
   }).join('');
+  
+  // Setup image error handlers (CSP compliant)
+  container.querySelectorAll('img[data-fallback]').forEach((img) => {
+    const image = img as HTMLImageElement;
+    image.addEventListener('error', function() {
+      const fallback = this.getAttribute('data-fallback') || '';
+      this.style.display = 'none';
+      const parent = this.parentElement;
+      if (parent && !parent.textContent?.trim()) {
+        parent.textContent = fallback;
+      }
+    });
+  });
 }
 
 /**

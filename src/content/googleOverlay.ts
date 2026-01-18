@@ -113,9 +113,9 @@ function getOverlayHTML(items: DropdownItem[], query: string): string {
 function getItemsHTML(items: DropdownItem[]): string {
   return items.map((item, index) => `
     <div class="tabmind-google-overlay-item" data-url="${escapeHtml(item.url)}" data-index="${index}">
-      <div class="tabmind-google-overlay-item-favicon">
+      <div class="tabmind-google-overlay-item-favicon" data-fallback="${item.domain[0].toUpperCase()}">
         ${item.favicon 
-          ? `<img src="${escapeHtml(item.favicon)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${item.domain[0].toUpperCase()}'">`
+          ? `<img src="${escapeHtml(item.favicon)}" alt="" data-fallback="${item.domain[0].toUpperCase()}">`
           : item.domain[0].toUpperCase()}
       </div>
       <div class="tabmind-google-overlay-item-info">
@@ -257,6 +257,19 @@ function setupEventHandlers(overlay: HTMLElement, initialQuery: string): void {
           `;
         } else {
           itemsContainer.innerHTML = getItemsHTML(formattedItems);
+          
+          // Setup image error handlers (CSP compliant)
+          itemsContainer.querySelectorAll('img[data-fallback]').forEach((img) => {
+            const image = img as HTMLImageElement;
+            image.addEventListener('error', function() {
+              const fallback = this.getAttribute('data-fallback') || '';
+              this.style.display = 'none';
+              const parent = this.parentElement;
+              if (parent && !parent.textContent?.trim()) {
+                parent.textContent = fallback;
+              }
+            });
+          });
         }
       }
     } catch (error) {

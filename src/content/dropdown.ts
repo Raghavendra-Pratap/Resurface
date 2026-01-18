@@ -18,6 +18,19 @@ export function showDropdown(items: DropdownItem[]): void {
   dropdown.id = 'tabmind-dropdown';
   dropdown.innerHTML = getDropdownHTML(items);
   
+  // Setup image error handlers (CSP compliant)
+  dropdown.querySelectorAll('img[data-fallback]').forEach((img) => {
+    const image = img as HTMLImageElement;
+    image.addEventListener('error', function() {
+      const fallback = this.getAttribute('data-fallback') || '';
+      this.style.display = 'none';
+      const parent = this.parentElement;
+      if (parent && !parent.textContent?.trim()) {
+        parent.textContent = fallback;
+      }
+    });
+  });
+  
   // Position in top-right
   dropdown.style.top = '80px';
   dropdown.style.right = '20px';
@@ -87,7 +100,7 @@ function getDropdownHTML(items: DropdownItem[]): string {
  */
 function getItemHTML(item: DropdownItem): string {
   const faviconContent = item.favicon
-    ? `<img src="${escapeHtml(item.favicon)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${item.domain[0].toUpperCase()}'">`
+    ? `<img src="${escapeHtml(item.favicon)}" alt="" data-fallback="${item.domain[0].toUpperCase()}">`
     : item.domain[0].toUpperCase();
   
   return `
