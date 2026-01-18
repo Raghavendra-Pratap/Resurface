@@ -99,7 +99,9 @@ body {
 /* Search Wrapper */
 .newtab-search-wrapper {
   width: 100%;
+  max-width: 680px;
   position: relative;
+  margin: 0 auto;
 }
 
 /* Search Box */
@@ -458,9 +460,17 @@ body {
 .newtab-quick-links {
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   margin-top: 32px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 8px 0;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.newtab-quick-links::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
 .newtab-quick-link {
@@ -468,12 +478,13 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 14px 16px;
+  padding: 12px 14px;
   border-radius: 12px;
   text-decoration: none;
   color: var(--text-secondary);
   transition: all 0.2s ease;
-  min-width: 72px;
+  min-width: 68px;
+  flex-shrink: 0;
 }
 
 .newtab-quick-link:hover {
