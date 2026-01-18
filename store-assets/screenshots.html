@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resurface - Store Screenshots</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-dark: #0a0a0b;
+      --bg-card: #141416;
+      --bg-card-hover: #1a1a1e;
+      --border: #2a2a2e;
+      --text-primary: #f5f5f7;
+      --text-secondary: #a0a0a5;
+      --text-muted: #6a6a6e;
+      --accent: #6366f1;
+      --accent-hover: #818cf8;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a1a;
+      padding: 40px;
+      color: white;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--accent);
+    }
+
+    .instructions {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #888;
+    }
+
+    .screenshot-container {
+      margin-bottom: 60px;
+    }
+
+    .screenshot-label {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    /* Screenshot Frame - 1280x800 */
+    .screenshot {
+      width: 1280px;
+      height: 800px;
+      margin: 0 auto;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    /* Screenshot 1: New Tab */
+    .screenshot-newtab {
+      background: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(139, 92, 246, 0.1), transparent),
+        var(--bg-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+    }
+
+    .newtab-logo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 50px;
+    }
+
+    .newtab-logo-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--accent);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+    }
+
+    .newtab-logo-icon svg {
+      width: 32px;
+      height: 32px;
+      stroke: white;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .newtab-logo-text {
+      font-size: 36px;
+      font-weight: 600;
+    }
+
+    .search-box {
+      width: 680px;
+      background: var(--bg-card);
+      border: 2px solid var(--accent);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 0 60px rgba(99, 102, 241, 0.2);
+    }
+
+    .search-box svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--text-muted);
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .search-box input {
+      flex: 1;
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .search-box input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-hint {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .search-hint kbd {
+      background: var(--bg-dark);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .quick-links {
+      display: flex;
+      gap: 12px;
+      margin-top: 40px;
+    }
+
+    .quick-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 20px;
+      border-radius: 14px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+
+    .quick-link:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .quick-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quick-icon svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .quick-icon.gmail { background: rgba(234, 67, 53, 0.15); color: #ea4335; }
+    .quick-icon.images { background: rgba(66, 133, 244, 0.15); color: #4285f4; }
+    .quick-icon.drive { background: rgba(251, 188, 4, 0.15); color: #fbbc04; }
+    .quick-icon.youtube { background: rgba(255, 0, 0, 0.15); color: #ff0000; }
+    .quick-icon.maps { background: rgba(52, 168, 83, 0.15); color: #34a853; }
+
+    .quick-link span {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-top: 40px;
+      padding: 16px 28px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 36px;
+      background: var(--border);
+    }
+
+    /* Screenshot 2: Save Toast */
+    .screenshot-toast {
+      background: url('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1280&h=800&fit=crop') center/cover;
+      position: relative;
+    }
+
+    .screenshot-toast::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+    }
+
+    .toast-container {
+      position: absolute;
+      bottom: 100px;
+      right: 40px;
+      width: 380px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .toast-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 20px;
+      background: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .toast-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toast-icon svg {
+      width: 22px;
+      height: 22px;
+      stroke: white;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .toast-header-text {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .toast-header-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .toast-body {
+      padding: 20px;
+    }
+
+    .toast-field {
+      margin-bottom: 16px;
+    }
+
+    .toast-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .toast-input {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+
+    .toast-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toast-tag {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .toast-tag.dev { background: rgba(129, 140, 248, 0.15); color: #818cf8; }
+    .toast-tag.article { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+
+    .toast-footer {
+      display: flex;
+      gap: 12px;
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .toast-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .toast-btn-secondary {
+      background: var(--bg-dark);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .toast-btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .toast-timer {
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent) 60%, transparent 60%);
+    }
+
+    /* Screenshot 3: Dashboard */
+    .screenshot-dashboard {
+      background: var(--bg-dark);
+      display: grid;
+      grid-template-columns: 260px 1fr;
+    }
+
+    .sidebar {
+      background: #0f0f11;
+      border-right: 1px solid var(--border);
+      padding: 24px;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+
+    .sidebar-logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-logo-icon svg {
+      width: 22px;
+      height: 22px;
+      stroke: white;
+      stroke-width: 2.5;
+      fill: none;
+    }
+
+    .sidebar-logo-text {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .nav-section {
+      margin-bottom: 28px;
+    }
+
+    .nav-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .nav-item.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .nav-item .count {
+      margin-left: auto;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .nav-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .main-content {
+      padding: 32px;
+    }
+
+    .main-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .main-title {
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .main-search {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 300px;
+    }
+
+    .main-search svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--text-muted);
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .main-search input {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .item-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+
+    .item-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .item-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .item-favicon {
+      width: 40px;
+      height: 40px;
+      background: var(--bg-dark);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 14px;
+    }
+
+    .item-title {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .item-url {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .item-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .item-tag {
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .item-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .item-context {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .item-context svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    /* Screenshot 4: Google Overlay */
+    .screenshot-google {
+      background: white;
+      position: relative;
+    }
+
+    .google-header {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 16px 24px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .google-logo {
+      font-size: 28px;
+      font-weight: 500;
+    }
+
+    .google-logo span:nth-child(1) { color: #4285f4; }
+    .google-logo span:nth-child(2) { color: #ea4335; }
+    .google-logo span:nth-child(3) { color: #fbbc04; }
+    .google-logo span:nth-child(4) { color: #4285f4; }
+    .google-logo span:nth-child(5) { color: #34a853; }
+    .google-logo span:nth-child(6) { color: #ea4335; }
+
+    .google-search {
+      flex: 1;
+      max-width: 600px;
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      border: 1px solid #dfe1e5;
+      border-radius: 24px;
+      box-shadow: 0 1px 6px rgba(32,33,36,0.1);
+    }
+
+    .google-search input {
+      flex: 1;
+      border: none;
+      font-size: 16px;
+      color: #202124;
+      outline: none;
+    }
+
+    .google-body {
+      display: flex;
+      padding: 24px;
+      gap: 40px;
+    }
+
+    .google-results {
+      flex: 1;
+    }
+
+    .google-result {
+      margin-bottom: 28px;
+    }
+
+    .google-result-url {
+      font-size: 14px;
+      color: #202124;
+      margin-bottom: 4px;
+    }
+
+    .google-result-title {
+      font-size: 20px;
+      color: #1a0dab;
+      margin-bottom: 6px;
+    }
+
+    .google-result-desc {
+      font-size: 14px;
+      color: #4d5156;
+      line-height: 1.5;
+    }
+
+    .resurface-overlay {
+      width: 360px;
+      background: var(--bg-card);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      position: absolute;
+      top: 100px;
+      right: 40px;
+    }
+
+    .overlay-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      background: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .overlay-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .overlay-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overlay-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: white;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .overlay-title {
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    .overlay-title strong {
+      color: var(--accent);
+    }
+
+    .overlay-body {
+      padding: 12px;
+    }
+
+    .overlay-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      background: var(--bg-dark);
+    }
+
+    .overlay-item-favicon {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-card);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 12px;
+    }
+
+    .overlay-item-content {
+      flex: 1;
+    }
+
+    .overlay-item-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .overlay-item-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .overlay-item-tags {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .overlay-tag {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    /* Promo Banner */
+    .screenshot-promo {
+      background: linear-gradient(135deg, #0f0f11 0%, #1a1a2e 50%, #16213e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screenshot-promo::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+    }
+
+    .promo-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .promo-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .promo-logo-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--accent);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 40px rgba(99, 102, 241, 0.4);
+    }
+
+    .promo-logo-icon svg {
+      width: 44px;
+      height: 44px;
+      stroke: white;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .promo-logo-text {
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
+
+    .promo-tagline {
+      font-size: 28px;
+      color: var(--text-secondary);
+      margin-bottom: 50px;
+      max-width: 600px;
+    }
+
+    .promo-features {
+      display: flex;
+      gap: 60px;
+      justify-content: center;
+    }
+
+    .promo-feature {
+      text-align: center;
+    }
+
+    .promo-feature-icon {
+      width: 64px;
+      height: 64px;
+      background: rgba(99, 102, 241, 0.15);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .promo-feature-icon svg {
+      width: 32px;
+      height: 32px;
+      stroke: var(--accent);
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .promo-feature-text {
+      font-size: 16px;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <h1>Resurface - Chrome Web Store Screenshots</h1>
+  <p class="instructions">
+    Right-click each screenshot → "Save image as" or use browser developer tools to capture at exact size.<br>
+    Required size: 1280×800 pixels
+  </p>
+
+  <!-- Screenshot 1: New Tab Page -->
+  <div class="screenshot-container">
+    <div class="screenshot-label">Screenshot 1: New Tab Page (1280×800)</div>
+    <div class="screenshot screenshot-newtab">
+      <div class="newtab-logo">
+        <div class="newtab-logo-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <span class="newtab-logo-text">Resurface</span>
+      </div>
+
+      <div class="search-box">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" placeholder="Search the web or your saved tabs..." readonly>
+        <div class="search-hint">
+          <kbd>↵</kbd> Google
+        </div>
+      </div>
+
+      <div class="quick-links">
+        <a class="quick-link">
+          <div class="quick-icon gmail">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/></svg>
+          </div>
+          <span>Gmail</span>
+        </a>
+        <a class="quick-link">
+          <div class="quick-icon images">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+          </div>
+          <span>Images</span>
+        </a>
+        <a class="quick-link">
+          <div class="quick-icon drive">
+            <svg viewBox="0 0 24 24"><path d="M7.71 3.5L1.15 15l3.43 6h13.71l3.43-6L15.15 3.5H7.71z" fill="currentColor"/></svg>
+          </div>
+          <span>Drive</span>
+        </a>
+        <a class="quick-link">
+          <div class="quick-icon youtube">
+            <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" fill="currentColor"/></svg>
+          </div>
+          <span>YouTube</span>
+        </a>
+        <a class="quick-link">
+          <div class="quick-icon maps">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/></svg>
+          </div>
+          <span>Maps</span>
+        </a>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat">
+          <div class="stat-value">47</div>
+          <div class="stat-label">saved pages</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <div class="stat-value">12</div>
+          <div class="stat-label">topics</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat" style="color: var(--accent);">
+          <div class="stat-label">Open Dashboard →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screenshot 2: Save Toast -->
+  <div class="screenshot-container">
+    <div class="screenshot-label">Screenshot 2: Save Toast (1280×800)</div>
+    <div class="screenshot screenshot-toast">
+      <div class="toast-container">
+        <div class="toast-header">
+          <div class="toast-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="toast-header-text">Add to Resurface</div>
+            <div class="toast-header-subtitle">Auto-saves in 5 seconds</div>
+          </div>
+        </div>
+        <div class="toast-body">
+          <div class="toast-field">
+            <div class="toast-label">Title</div>
+            <input class="toast-input" value="Introduction to TypeScript - Official Docs" readonly>
+          </div>
+          <div class="toast-field">
+            <div class="toast-label">Topics</div>
+            <div class="toast-tags">
+              <span class="toast-tag dev">Development</span>
+              <span class="toast-tag article">TypeScript</span>
+              <button class="toast-tag" style="background: var(--bg-dark); color: var(--text-muted);">+ Add</button>
+            </div>
+          </div>
+        </div>
+        <div class="toast-footer">
+          <button class="toast-btn toast-btn-secondary">Cancel</button>
+          <button class="toast-btn toast-btn-primary">Save</button>
+        </div>
+        <div class="toast-timer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screenshot 3: Dashboard -->
+  <div class="screenshot-container">
+    <div class="screenshot-label">Screenshot 3: Dashboard (1280×800)</div>
+    <div class="screenshot screenshot-dashboard">
+      <div class="sidebar">
+        <div class="sidebar-logo">
+          <div class="sidebar-logo-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <span class="sidebar-logo-text">Resurface</span>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label">Library</div>
+          <div class="nav-item active">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>All Saved</span>
+            <span class="count">47</span>
+          </div>
+          <div class="nav-item">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Recent</span>
+            <span class="count">12</span>
+          </div>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label">Topics</div>
+          <div class="nav-item">
+            <span class="nav-color" style="background: #818cf8;"></span>
+            <span>Development</span>
+            <span class="count">18</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-color" style="background: #34d399;"></span>
+            <span>Research</span>
+            <span class="count">9</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-color" style="background: #fbbf24;"></span>
+            <span>Design</span>
+            <span class="count">7</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <div class="main-header">
+          <h1 class="main-title">All Saved</h1>
+          <div class="main-search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" placeholder="Search saved items..." readonly>
+          </div>
+        </div>
+
+        <div class="items-grid">
+          <div class="item-card">
+            <div class="item-header">
+              <div class="item-favicon">TS</div>
+              <div class="item-title">Introduction to TypeScript - Official Documentation</div>
+            </div>
+            <div class="item-url">typescriptlang.org</div>
+            <div class="item-tags">
+              <span class="item-tag" style="background: rgba(129, 140, 248, 0.15); color: #818cf8;">Development</span>
+            </div>
+            <div class="item-footer">
+              <div class="item-context">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                "typescript tutorial"
+              </div>
+              <span>2h ago</span>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-header">
+              <div class="item-favicon">GH</div>
+              <div class="item-title">Building a Chrome Extension with Manifest V3</div>
+            </div>
+            <div class="item-url">github.com</div>
+            <div class="item-tags">
+              <span class="item-tag" style="background: rgba(129, 140, 248, 0.15); color: #818cf8;">Development</span>
+            </div>
+            <div class="item-footer">
+              <div class="item-context">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                "chrome extension"
+              </div>
+              <span>1d ago</span>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-header">
+              <div class="item-favicon">FG</div>
+              <div class="item-title">Design Systems 101 - A Complete Guide</div>
+            </div>
+            <div class="item-url">figma.com</div>
+            <div class="item-tags">
+              <span class="item-tag" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24;">Design</span>
+            </div>
+            <div class="item-footer">
+              <span></span>
+              <span>3d ago</span>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-header">
+              <div class="item-favicon">MD</div>
+              <div class="item-title">The Future of AI in Software Development</div>
+            </div>
+            <div class="item-url">medium.com</div>
+            <div class="item-tags">
+              <span class="item-tag" style="background: rgba(52, 211, 153, 0.15); color: #34d399;">Research</span>
+            </div>
+            <div class="item-footer">
+              <span></span>
+              <span>5d ago</span>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-header">
+              <div class="item-favicon">RE</div>
+              <div class="item-title">React 19 - What's New and Migration Guide</div>
+            </div>
+            <div class="item-url">react.dev</div>
+            <div class="item-tags">
+              <span class="item-tag" style="background: rgba(129, 140, 248, 0.15); color: #818cf8;">Development</span>
+            </div>
+            <div class="item-footer">
+              <div class="item-context">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                "react 19"
+              </div>
+              <span>1w ago</span>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-header">
+              <div class="item-favicon">YT</div>
+              <div class="item-title">CSS Grid Complete Tutorial - Fireship</div>
+            </div>
+            <div class="item-url">youtube.com</div>
+            <div class="item-tags">
+              <span class="item-tag" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24;">Design</span>
+            </div>
+            <div class="item-footer">
+              <span></span>
+              <span>1w ago</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screenshot 4: Google Overlay -->
+  <div class="screenshot-container">
+    <div class="screenshot-label">Screenshot 4: Google Search Overlay (1280×800)</div>
+    <div class="screenshot screenshot-google">
+      <div class="google-header">
+        <div class="google-logo">
+          <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+        </div>
+        <div class="google-search">
+          <input type="text" value="typescript tutorial" readonly>
+        </div>
+      </div>
+      <div class="google-body">
+        <div class="google-results">
+          <div class="google-result">
+            <div class="google-result-url">https://www.typescriptlang.org › docs › handbook</div>
+            <div class="google-result-title">TypeScript: Handbook - The TypeScript Handbook</div>
+            <div class="google-result-desc">The TypeScript Handbook is the definitive guide to the TypeScript programming language. It covers all the basic concepts...</div>
+          </div>
+          <div class="google-result">
+            <div class="google-result-url">https://www.w3schools.com › typescript</div>
+            <div class="google-result-title">TypeScript Tutorial - W3Schools</div>
+            <div class="google-result-desc">TypeScript is JavaScript with added syntax for types. Learn TypeScript step-by-step with examples...</div>
+          </div>
+          <div class="google-result">
+            <div class="google-result-url">https://www.tutorialspoint.com › typescript</div>
+            <div class="google-result-title">TypeScript Tutorial - TutorialsPoint</div>
+            <div class="google-result-desc">TypeScript is a typed superset of JavaScript that compiles to plain JavaScript. This tutorial will teach you TypeScript...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="resurface-overlay">
+        <div class="overlay-header">
+          <div class="overlay-header-left">
+            <div class="overlay-icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <div class="overlay-title"><strong>2 saved pages</strong> match</div>
+          </div>
+        </div>
+        <div class="overlay-body">
+          <div class="overlay-item">
+            <div class="overlay-item-favicon">TS</div>
+            <div class="overlay-item-content">
+              <div class="overlay-item-title">Introduction to TypeScript - Official Docs</div>
+              <div class="overlay-item-meta">typescriptlang.org • 2h ago</div>
+              <div class="overlay-item-tags">
+                <span class="overlay-tag" style="background: rgba(129, 140, 248, 0.15); color: #818cf8;">Development</span>
+              </div>
+            </div>
+          </div>
+          <div class="overlay-item">
+            <div class="overlay-item-favicon">GH</div>
+            <div class="overlay-item-content">
+              <div class="overlay-item-title">TypeScript Deep Dive - GitHub Book</div>
+              <div class="overlay-item-meta">github.com • 1w ago</div>
+              <div class="overlay-item-tags">
+                <span class="overlay-tag" style="background: rgba(129, 140, 248, 0.15); color: #818cf8;">Development</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screenshot 5: Promo Banner -->
+  <div class="screenshot-container">
+    <div class="screenshot-label">Promotional Banner - Large Tile (920×680)</div>
+    <div class="screenshot screenshot-promo" style="width: 920px; height: 680px;">
+      <div class="promo-content">
+        <div class="promo-logo">
+          <div class="promo-logo-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <span class="promo-logo-text">Resurface</span>
+        </div>
+        <p class="promo-tagline">Close tabs without fear.<br>Resurface them when you need them.</p>
+        <div class="promo-features">
+          <div class="promo-feature">
+            <div class="promo-feature-icon">
+              <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="promo-feature-text">Save with Context</div>
+          </div>
+          <div class="promo-feature">
+            <div class="promo-feature-icon">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </div>
+            <div class="promo-feature-text">Smart Search</div>
+          </div>
+          <div class="promo-feature">
+            <div class="promo-feature-icon">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            </div>
+            <div class="promo-feature-text">Full Dashboard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
