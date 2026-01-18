@@ -175,22 +175,43 @@ function focusSearchInput() {
   const searchInput = document.getElementById('search-input') as HTMLInputElement;
   if (!searchInput) return;
   
+  // Simulate Escape key to release focus from URL bar
+  const simulateEscape = () => {
+    document.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Escape',
+      code: 'Escape',
+      keyCode: 27,
+      which: 27,
+      bubbles: true,
+      cancelable: true
+    }));
+  };
+  
   // Aggressive focus strategy - Chrome really wants the URL bar
   const doFocus = () => {
     searchInput.focus();
     searchInput.select(); // Also select any existing text
   };
   
+  // First, simulate Escape to release URL bar focus
+  simulateEscape();
+  
   // Immediate focus
   doFocus();
   
   // Use requestAnimationFrame for smoother timing
-  requestAnimationFrame(doFocus);
+  requestAnimationFrame(() => {
+    simulateEscape();
+    doFocus();
+  });
   requestAnimationFrame(() => requestAnimationFrame(doFocus));
   
-  // Multiple delayed attempts (Chrome may steal focus at various times)
+  // Multiple delayed attempts with Escape simulation
   const delays = [0, 10, 20, 50, 100, 150, 200, 300, 500];
-  delays.forEach(delay => setTimeout(doFocus, delay));
+  delays.forEach(delay => setTimeout(() => {
+    simulateEscape();
+    doFocus();
+  }, delay));
   
   // Keep trying for a bit longer with intervals
   let attempts = 0;
@@ -198,6 +219,7 @@ function focusSearchInput() {
   const focusInterval = setInterval(() => {
     attempts++;
     if (document.activeElement !== searchInput) {
+      simulateEscape();
       doFocus();
     }
     if (attempts >= maxAttempts) {
@@ -207,6 +229,7 @@ function focusSearchInput() {
   
   // Also focus on window focus (when user clicks back to the tab)
   window.addEventListener('focus', () => {
+    simulateEscape();
     setTimeout(doFocus, 0);
     setTimeout(doFocus, 50);
   });
@@ -214,7 +237,7 @@ function focusSearchInput() {
   // Focus on any click in the page (except on interactive elements)
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
-    if (!target.closest('a, button, input, select, textarea, .newtab-result-item, .newtab-history-item')) {
+    if (!target.closest('a, button, input, select, textarea, .newtab-result-item, .newtab-history-item, .newtab-quick-link')) {
       doFocus();
     }
   });
