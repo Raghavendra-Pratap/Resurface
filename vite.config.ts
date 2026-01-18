@@ -8,7 +8,7 @@ export default defineConfig({
       manifest: () => ({
         manifest_version: 3,
         name: 'Resurface',
-        version: '1.0.7',
+        version: '1.0.8',
         description: 'Close tabs without fear. Save with context, resurface when relevant.',
         
         permissions: [

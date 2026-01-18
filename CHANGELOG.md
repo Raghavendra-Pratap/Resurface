@@ -5,6 +5,12 @@ All notable changes to Resurface will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.8] - 2026-01-18
+
+### Fixed
+- Updated logo across dashboard and new tab to use correct stacked cards design
+- Logo now matches the official Resurface brand icon
+
 ## [1.0.7] - 2026-01-18
 
 ### Added
