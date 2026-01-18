@@ -436,6 +436,22 @@ function setupEventListeners() {
     if (autoSaveValue) autoSaveValue.textContent = `${autoSaveRange.value}s`;
   });
 
+  // Show shortcuts checkbox
+  document.getElementById('setting-show-shortcuts')?.addEventListener('change', async (e) => {
+    const target = e.target as HTMLInputElement;
+    if (!state.settings) return;
+    
+    await sendToBackground('UPDATE_QUICK_SHORTCUTS', {
+      showQuickShortcuts: target.checked,
+      quickShortcuts: state.settings.quickShortcuts
+    });
+    
+    state.settings.showQuickShortcuts = target.checked;
+  });
+
+  // Add custom shortcut button
+  document.getElementById('btn-add-custom-shortcut')?.addEventListener('click', addCustomShortcut);
+
   // Save settings button
   document.getElementById('btn-save-settings')?.addEventListener('click', async () => {
     const autoSaveDelay = parseInt(autoSaveRange.value) * 1000;
@@ -471,6 +487,135 @@ function updateSettingsUI() {
   if (showDropdownCheck) {
     showDropdownCheck.checked = state.settings.showResurfaceDropdown;
   }
+
+  const showShortcutsCheck = document.getElementById('setting-show-shortcuts') as HTMLInputElement;
+  if (showShortcutsCheck) {
+    showShortcutsCheck.checked = state.settings.showQuickShortcuts ?? true;
+  }
+
+  renderShortcutsList();
+}
+
+/**
+ * Render shortcuts list in settings
+ */
+function renderShortcutsList() {
+  const shortcutsList = document.getElementById('shortcuts-list');
+  if (!shortcutsList || !state.settings) return;
+
+  const shortcuts = state.settings.quickShortcuts || [];
+  
+  shortcutsList.innerHTML = shortcuts.map(shortcut => `
+    <div class="shortcut-item" data-shortcut-id="${shortcut.id}">
+      <label class="checkbox-label" style="margin: 0; flex: 1;">
+        <input type="checkbox" class="shortcut-toggle" data-id="${shortcut.id}" ${shortcut.enabled ? 'checked' : ''}>
+        <span style="margin-left: 8px;">
+          <strong>${shortcut.title}</strong>
+          <span style="color: var(--text-muted); font-size: 12px; display: block; margin-top: 2px;">${shortcut.url}</span>
+        </span>
+      </label>
+      ${shortcut.isCustom ? `
+        <button class="btn-icon shortcut-delete" data-id="${shortcut.id}" title="Delete">
+          <svg viewBox="0 0 24 24" width="16" height="16">
+            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+        </button>
+      ` : ''}
+    </div>
+  `).join('');
+
+  // Add event listeners
+  shortcutsList.querySelectorAll('.shortcut-toggle').forEach(toggle => {
+    toggle.addEventListener('change', async (e) => {
+      const target = e.target as HTMLInputElement;
+      const id = target.dataset.id!;
+      await toggleShortcut(id, target.checked);
+    });
+  });
+
+  shortcutsList.querySelectorAll('.shortcut-delete').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const target = e.target as HTMLElement;
+      const id = target.closest('.shortcut-delete')?.getAttribute('data-id')!;
+      if (confirm('Delete this custom shortcut?')) {
+        await deleteCustomShortcut(id);
+      }
+    });
+  });
+}
+
+/**
+ * Toggle a shortcut's enabled state
+ */
+async function toggleShortcut(id: string, enabled: boolean) {
+  if (!state.settings) return;
+  
+  const shortcuts = state.settings.quickShortcuts.map(s => 
+    s.id === id ? { ...s, enabled } : s
+  );
+  
+  await sendToBackground('UPDATE_QUICK_SHORTCUTS', {
+    showQuickShortcuts: state.settings.showQuickShortcuts,
+    quickShortcuts: shortcuts
+  });
+  
+  state.settings.quickShortcuts = shortcuts;
+}
+
+/**
+ * Delete a custom shortcut
+ */
+async function deleteCustomShortcut(id: string) {
+  if (!state.settings) return;
+  
+  const shortcuts = state.settings.quickShortcuts.filter(s => s.id !== id);
+  
+  await sendToBackground('UPDATE_QUICK_SHORTCUTS', {
+    showQuickShortcuts: state.settings.showQuickShortcuts,
+    quickShortcuts: shortcuts
+  });
+  
+  state.settings.quickShortcuts = shortcuts;
+  renderShortcutsList();
+}
+
+/**
+ * Add a custom shortcut
+ */
+async function addCustomShortcut() {
+  const title = prompt('Enter shortcut title:');
+  if (!title) return;
+  
+  const url = prompt('Enter URL:');
+  if (!url) return;
+  
+  // Validate URL
+  try {
+    new URL(url);
+  } catch {
+    alert('Please enter a valid URL (e.g., https://example.com)');
+    return;
+  }
+  
+  if (!state.settings) return;
+  
+  const newShortcut = {
+    id: `custom-${Date.now()}`,
+    url,
+    title,
+    enabled: true,
+    isCustom: true
+  };
+  
+  const shortcuts = [...state.settings.quickShortcuts, newShortcut];
+  
+  await sendToBackground('UPDATE_QUICK_SHORTCUTS', {
+    showQuickShortcuts: state.settings.showQuickShortcuts,
+    quickShortcuts: shortcuts
+  });
+  
+  state.settings.quickShortcuts = shortcuts;
+  renderShortcutsList();
 }
 
 /**
