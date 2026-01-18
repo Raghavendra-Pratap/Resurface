@@ -1,6 +1,6 @@
 import type { DropdownItem } from '../shared/types';
 import { sendToBackground } from '../shared/messages';
-import { escapeHtml } from '../shared/utils';
+import { escapeHtml, getResurfaceLogoSvg } from '../shared/utils';
 
 let currentModal: HTMLElement | null = null;
 let allItems: DropdownItem[] = [];
@@ -95,9 +95,7 @@ function getResultsHTML(items: DropdownItem[]): string {
     return `
       <div class="tabmind-search-empty">
         <div class="tabmind-search-empty-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-          </svg>
+          ${getResurfaceLogoSvg('searchEmpty')}
         </div>
         <div class="tabmind-search-empty-text">No saved pages found</div>
         <div class="tabmind-search-empty-hint">Press <kbd>⌘+Shift+S</kbd> to save pages</div>

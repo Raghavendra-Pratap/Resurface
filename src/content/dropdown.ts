@@ -1,5 +1,5 @@
 import type { DropdownItem } from '../shared/types';
-import { escapeHtml } from '../shared/utils';
+import { escapeHtml, getResurfaceLogoSvg } from '../shared/utils';
 
 let currentDropdown: HTMLElement | null = null;
 let clickOutsideHandler: ((e: MouseEvent) => void) | null = null;
@@ -73,9 +73,7 @@ export function hideDropdown(): void {
 function getDropdownHTML(items: DropdownItem[]): string {
   return `
     <div class="tabmind-dropdown-header">
-      <svg viewBox="0 0 24 24">
-        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-      </svg>
+      ${getResurfaceLogoSvg('dropdown')}
       <span><strong>${items.length} saved page${items.length > 1 ? 's' : ''}</strong> match your search</span>
     </div>
     <div class="tabmind-dropdown-items">

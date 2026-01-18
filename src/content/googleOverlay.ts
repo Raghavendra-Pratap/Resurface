@@ -1,6 +1,6 @@
 import type { DropdownItem } from '../shared/types';
 import { sendToBackground } from '../shared/messages';
-import { escapeHtml } from '../shared/utils';
+import { escapeHtml, getResurfaceLogoSvg } from '../shared/utils';
 
 let currentOverlay: HTMLElement | null = null;
 let isMinimized = false;
@@ -52,9 +52,7 @@ function getOverlayHTML(items: DropdownItem[], query: string): string {
       <div class="tabmind-google-overlay-header">
         <div class="tabmind-google-overlay-header-left">
           <div class="tabmind-google-overlay-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-            </svg>
+            ${getResurfaceLogoSvg('overlay')}
           </div>
           <span class="tabmind-google-overlay-title">
             <strong>${items.length} saved page${items.length > 1 ? 's' : ''}</strong> match your search

@@ -5,7 +5,7 @@ import { showToast } from './toast';
 import { showDropdown, hideDropdown } from './dropdown';
 import { showSearchModal } from './searchModal';
 import { showGoogleOverlay } from './googleOverlay';
-import { escapeHtml } from '../shared/utils';
+import { escapeHtml, getResurfaceLogoSvg } from '../shared/utils';
 
 /**
  * Content script entry point
@@ -152,9 +152,7 @@ async function handleShowGoogleHint(data: MessagePayloads['SHOW_GOOGLE_HINT']): 
   hint.className = 'tabmind-google-hint';
   hint.innerHTML = `
     <div class="tabmind-google-hint-icon">
-      <svg viewBox="0 0 24 24">
-        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-      </svg>
+      ${getResurfaceLogoSvg('hint')}
     </div>
     <div class="tabmind-google-hint-text">
       <strong>${data.count}</strong> saved page${data.count > 1 ? 's' : ''} match "${escapeHtml(data.query)}"

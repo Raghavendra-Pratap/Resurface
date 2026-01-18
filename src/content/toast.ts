@@ -1,5 +1,5 @@
 import type { ToastData, ToastResult, Topic, UUID } from '../shared/types';
-import { escapeHtml } from '../shared/utils';
+import { escapeHtml, getResurfaceLogoSvg } from '../shared/utils';
 
 let currentToast: HTMLElement | null = null;
 let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
@@ -82,9 +82,7 @@ function getToastHTML(data: ToastData): string {
     <div class="tabmind-toast">
       <div class="tabmind-toast-header">
         <div class="tabmind-toast-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-          </svg>
+          ${getResurfaceLogoSvg('toast')}
         </div>
         <div>
           <div class="tabmind-toast-header-text">Add to Resurface</div>
