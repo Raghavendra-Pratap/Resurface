@@ -56,11 +56,11 @@ function updateTrayHeights() {
   const searchBoxHeight = 80; // Approximate search box height
   const logoHeight = 140; // Logo + spacing (top: 60px + logo ~80px)
   const bottomSpace = 180; // Quick links + hints (no stats)
-  const trayGap = 4; // Gap between search box and trays (reduced from 8px)
+  const trayGap = 60; // Gap between search box and trays (30px top + 30px bottom)
   
-  // Calculate available space for trays (more space since trays are closer)
-  const availableSpace = viewportHeight - logoHeight - searchBoxHeight - bottomSpace - (trayGap * 2);
-  const maxTrayHeight = Math.max(200, Math.min(500, availableSpace / 2)); // Increased max from 400 to 500
+  // Calculate available space for trays (now that they're closer)
+  const availableSpace = viewportHeight - logoHeight - searchBoxHeight - bottomSpace - trayGap;
+  const maxTrayHeight = Math.max(200, Math.min(450, availableSpace / 2));
   
   const historyTray = document.getElementById('history-tray');
   const resultsTray = document.getElementById('results-tray');
