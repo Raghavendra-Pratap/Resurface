@@ -33,6 +33,8 @@ export type MessageType =
   | 'PING'
   | 'EXPORT_DATA'
   | 'IMPORT_DATA'
+  | 'OPEN_DASHBOARD'
+  | 'UPDATE_QUICK_SHORTCUTS'
   
   // Background -> Content
   | 'EXTRACT_PAGE'
@@ -112,6 +114,11 @@ export interface MessagePayloads {
     data: BackupData;
     mode: 'merge' | 'replace';
   };
+  OPEN_DASHBOARD: undefined;
+  UPDATE_QUICK_SHORTCUTS: {
+    showQuickShortcuts: boolean;
+    quickShortcuts: import('./types').QuickShortcut[];
+  };
   
   // Background -> Content
   EXTRACT_PAGE: undefined;
@@ -165,6 +172,8 @@ export interface MessageResponses {
   PING: { pong: boolean };
   EXPORT_DATA: BackupData;
   IMPORT_DATA: { success: boolean; imported: { items: number; topics: number; intents: number } };
+  OPEN_DASHBOARD: void;
+  UPDATE_QUICK_SHORTCUTS: Settings;
   EXTRACT_PAGE: PageData;
   SHOW_TOAST: ToastResult | null;
   SHOW_CONFIRMATION: void;

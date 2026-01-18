@@ -441,6 +441,17 @@ const messageHandlers: Record<string, (payload: any, sender: chrome.runtime.Mess
 
   async IMPORT_DATA(payload: MessagePayloads['IMPORT_DATA']): Promise<any> {
     return importData(payload.data, payload.mode);
+  },
+  
+  async OPEN_DASHBOARD(): Promise<void> {
+    chrome.tabs.create({ url: chrome.runtime.getURL('src/dashboard/index.html') });
+  },
+  
+  async UPDATE_QUICK_SHORTCUTS(payload: MessagePayloads['UPDATE_QUICK_SHORTCUTS']): Promise<any> {
+    return updateSettings({
+      showQuickShortcuts: payload.showQuickShortcuts,
+      quickShortcuts: payload.quickShortcuts
+    });
   }
 };
 

@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupEventListeners();
   updateStats();
   updateShortcutHints();
+  await loadQuickShortcuts();
   
   // Aggressive focus on search input (Chrome tries to focus URL bar)
   focusSearchInput();
@@ -59,6 +60,9 @@ async function updateShortcutHints() {
     const searchShortcut = searchCommand?.shortcut || 'Not set';
     
     hintsContainer.innerHTML = `
+      <a href="#" class="newtab-hint-customize" id="open-dashboard-btn">
+        Open dashboard
+      </a>
       <span class="newtab-hint-item" title="Click to customize">
         ${formatShortcut(saveShortcut)} Save current tab
       </span>
@@ -69,6 +73,13 @@ async function updateShortcutHints() {
         Customize shortcuts
       </a>
     `;
+    
+    // Handle dashboard button click
+    const dashboardBtn = document.getElementById('open-dashboard-btn');
+    dashboardBtn?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await sendToBackground('OPEN_DASHBOARD');
+    });
     
     // Handle click on customize (can't open chrome:// directly, show instructions)
     const customizeLink = document.getElementById('customize-shortcuts');
@@ -689,6 +700,65 @@ function updateSelection(
   } else if (selectedSection === 'saved' && selectedIndex >= 0) {
     savedItems[selectedIndex]?.classList.add('selected');
     savedItems[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+  }
+}
+
+/**
+ * Load and render quick shortcuts based on settings
+ */
+async function loadQuickShortcuts() {
+  try {
+    const settings = await sendToBackground('GET_SETTINGS');
+    const quickLinksContainer = document.getElementById('quick-links');
+    
+    if (!quickLinksContainer) return;
+    
+    // Hide/show the container based on settings
+    if (!settings.showQuickShortcuts) {
+      quickLinksContainer.style.display = 'none';
+      return;
+    }
+    
+    quickLinksContainer.style.display = 'flex';
+    
+    // Get enabled shortcuts
+    const enabledShortcuts = settings.quickShortcuts.filter(s => s.enabled);
+    
+    // Icon mapping for default shortcuts
+    const iconMap: Record<string, string> = {
+      'gemini': `<path d="M12 2L2 12l10 10 10-10L12 2zm0 3.5L18.5 12 12 18.5 5.5 12 12 5.5z" fill="currentColor"/><circle cx="12" cy="12" r="3" fill="currentColor"/>`,
+      'gmail': `<path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="currentColor"/>`,
+      'drive': `<path d="M7.71 3.5L1.15 15l3.43 6h13.71l3.43-6L15.15 3.5H7.71zm.79 1.5h5.57l5.15 9h-5.57l-5.15-9zm-1.58 9.5L2.73 15l2.29 4h10.58l-2.29-4H6.92z" fill="currentColor"/>`,
+      'docs': `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M14 2v6h6" stroke="currentColor" stroke-width="2" fill="none"/><line x1="8" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="2"/><line x1="8" y1="17" x2="13" y2="17" stroke="currentColor" stroke-width="2"/>`,
+      'sheets': `<rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="2"/><line x1="3" y1="15" x2="21" y2="15" stroke="currentColor" stroke-width="2"/><line x1="9" y1="3" x2="9" y2="21" stroke="currentColor" stroke-width="2"/>`,
+      'slides': `<rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><polygon points="10,9 10,15 15,12" fill="currentColor"/>`,
+      'youtube': `<path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" fill="currentColor"/>`,
+      'maps': `<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>`,
+      'calendar': `<rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>`,
+      'translate': `<path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" fill="currentColor"/>`,
+      'images': `<rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><polyline points="21 15 16 10 5 21" stroke="currentColor" stroke-width="2" fill="none"/>`,
+      'news': `<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2" fill="none"/><line x1="4" y1="8" x2="20" y2="8" stroke="currentColor" stroke-width="2"/><line x1="4" y1="12" x2="12" y2="12" stroke="currentColor" stroke-width="2"/><line x1="4" y1="16" x2="12" y2="16" stroke="currentColor" stroke-width="2"/>`
+    };
+    
+    // Render shortcuts
+    quickLinksContainer.innerHTML = enabledShortcuts.map(shortcut => {
+      const iconSvg = iconMap[shortcut.id] || `<rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>`;
+      const iconClass = shortcut.id;
+      
+      return `
+        <a href="${shortcut.url}" class="newtab-quick-link" title="${shortcut.title}">
+          <div class="newtab-quick-icon ${iconClass}">
+            <svg viewBox="0 0 24 24">
+              ${iconSvg}
+            </svg>
+          </div>
+          <span>${shortcut.title}</span>
+        </a>
+      `;
+    }).join('');
+    
+  } catch (error) {
+    console.error('Error loading quick shortcuts:', error);
   }
 }
 
