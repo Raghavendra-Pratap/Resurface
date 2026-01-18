@@ -53,6 +53,18 @@ export interface Intent {
 }
 
 /**
+ * Quick shortcut definition
+ */
+export interface QuickShortcut {
+  id: string;
+  url: string;
+  title: string;
+  icon?: string;
+  enabled: boolean;
+  isCustom: boolean;
+}
+
+/**
  * User settings
  */
 export interface Settings {
@@ -61,6 +73,8 @@ export interface Settings {
   autoSaveDelay: number;        // Default: 5000 (ms)
   showResurfaceDropdown: boolean;
   defaultIntentId: UUID | null;
+  showQuickShortcuts: boolean;  // Show/hide quick shortcuts section
+  quickShortcuts: QuickShortcut[]; // List of quick shortcuts
 }
 
 /**

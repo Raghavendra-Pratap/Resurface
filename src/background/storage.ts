@@ -1,5 +1,5 @@
 import { openDB, IDBPDatabase, DBSchema } from 'idb';
-import type { SavedItem, Topic, Intent, Settings, UUID } from '../shared/types';
+import type { SavedItem, Topic, Intent, Settings, QuickShortcut, UUID } from '../shared/types';
 import type { BackupData } from '../shared/messages';
 import { 
   DEFAULT_INTENTS, 
@@ -296,13 +296,51 @@ async function initDefaults(): Promise<void> {
   // Check if settings exist
   const existingSettings = await database.get('settings', 'main');
   if (!existingSettings) {
+    // Create default quick shortcuts
+    const defaultShortcuts: QuickShortcut[] = [
+      { id: 'gemini', url: 'https://gemini.google.com', title: 'Gemini', enabled: true, isCustom: false },
+      { id: 'gmail', url: 'https://mail.google.com', title: 'Gmail', enabled: true, isCustom: false },
+      { id: 'drive', url: 'https://drive.google.com', title: 'Drive', enabled: true, isCustom: false },
+      { id: 'docs', url: 'https://docs.google.com', title: 'Docs', enabled: true, isCustom: false },
+      { id: 'sheets', url: 'https://sheets.google.com', title: 'Sheets', enabled: true, isCustom: false },
+      { id: 'slides', url: 'https://slides.google.com', title: 'Slides', enabled: true, isCustom: false },
+      { id: 'youtube', url: 'https://www.youtube.com', title: 'YouTube', enabled: true, isCustom: false },
+      { id: 'maps', url: 'https://maps.google.com', title: 'Maps', enabled: true, isCustom: false },
+      { id: 'calendar', url: 'https://calendar.google.com', title: 'Calendar', enabled: true, isCustom: false },
+      { id: 'translate', url: 'https://translate.google.com', title: 'Translate', enabled: true, isCustom: false },
+      { id: 'images', url: 'https://www.google.com/imghp', title: 'Images', enabled: true, isCustom: false },
+      { id: 'news', url: 'https://news.google.com', title: 'News', enabled: true, isCustom: false }
+    ];
+    
     await database.add('settings', {
       id: 'main',
       keyboardShortcut: 'Cmd+Shift+S',
       autoSaveDelay: 5000,
       showResurfaceDropdown: true,
-      defaultIntentId: null
+      defaultIntentId: null,
+      showQuickShortcuts: true,
+      quickShortcuts: defaultShortcuts
     });
+  } else if (!existingSettings.showQuickShortcuts !== undefined && !existingSettings.quickShortcuts) {
+    // Migrate existing settings to include quick shortcuts
+    const defaultShortcuts: QuickShortcut[] = [
+      { id: 'gemini', url: 'https://gemini.google.com', title: 'Gemini', enabled: true, isCustom: false },
+      { id: 'gmail', url: 'https://mail.google.com', title: 'Gmail', enabled: true, isCustom: false },
+      { id: 'drive', url: 'https://drive.google.com', title: 'Drive', enabled: true, isCustom: false },
+      { id: 'docs', url: 'https://docs.google.com', title: 'Docs', enabled: true, isCustom: false },
+      { id: 'sheets', url: 'https://sheets.google.com', title: 'Sheets', enabled: true, isCustom: false },
+      { id: 'slides', url: 'https://slides.google.com', title: 'Slides', enabled: true, isCustom: false },
+      { id: 'youtube', url: 'https://www.youtube.com', title: 'YouTube', enabled: true, isCustom: false },
+      { id: 'maps', url: 'https://maps.google.com', title: 'Maps', enabled: true, isCustom: false },
+      { id: 'calendar', url: 'https://calendar.google.com', title: 'Calendar', enabled: true, isCustom: false },
+      { id: 'translate', url: 'https://translate.google.com', title: 'Translate', enabled: true, isCustom: false },
+      { id: 'images', url: 'https://www.google.com/imghp', title: 'Images', enabled: true, isCustom: false },
+      { id: 'news', url: 'https://news.google.com', title: 'News', enabled: true, isCustom: false }
+    ];
+    
+    existingSettings.showQuickShortcuts = existingSettings.showQuickShortcuts ?? true;
+    existingSettings.quickShortcuts = existingSettings.quickShortcuts ?? defaultShortcuts;
+    await database.put('settings', existingSettings);
   }
   
   // Check if saved items exist - if not, add default Google services
@@ -746,7 +784,30 @@ export async function renameIntent(id: UUID, newName: string, newEmoji: string):
  */
 export async function getSettings(): Promise<Settings> {
   const database = await ensureDb();
-  const settings = await database.get('settings', 'main');
+  let settings = await database.get('settings', 'main');
+  
+  // Ensure settings have quick shortcuts (migration for existing users)
+  if (settings && (!settings.quickShortcuts || settings.showQuickShortcuts === undefined)) {
+    const defaultShortcuts: QuickShortcut[] = [
+      { id: 'gemini', url: 'https://gemini.google.com', title: 'Gemini', enabled: true, isCustom: false },
+      { id: 'gmail', url: 'https://mail.google.com', title: 'Gmail', enabled: true, isCustom: false },
+      { id: 'drive', url: 'https://drive.google.com', title: 'Drive', enabled: true, isCustom: false },
+      { id: 'docs', url: 'https://docs.google.com', title: 'Docs', enabled: true, isCustom: false },
+      { id: 'sheets', url: 'https://sheets.google.com', title: 'Sheets', enabled: true, isCustom: false },
+      { id: 'slides', url: 'https://slides.google.com', title: 'Slides', enabled: true, isCustom: false },
+      { id: 'youtube', url: 'https://www.youtube.com', title: 'YouTube', enabled: true, isCustom: false },
+      { id: 'maps', url: 'https://maps.google.com', title: 'Maps', enabled: true, isCustom: false },
+      { id: 'calendar', url: 'https://calendar.google.com', title: 'Calendar', enabled: true, isCustom: false },
+      { id: 'translate', url: 'https://translate.google.com', title: 'Translate', enabled: true, isCustom: false },
+      { id: 'images', url: 'https://www.google.com/imghp', title: 'Images', enabled: true, isCustom: false },
+      { id: 'news', url: 'https://news.google.com', title: 'News', enabled: true, isCustom: false }
+    ];
+    
+    settings.showQuickShortcuts = settings.showQuickShortcuts ?? true;
+    settings.quickShortcuts = settings.quickShortcuts ?? defaultShortcuts;
+    await database.put('settings', settings);
+  }
+  
   return settings!;
 }
 
