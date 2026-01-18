@@ -18,6 +18,7 @@ interface HistoryItem {
   url: string;
   domain: string;
   visitTime: string;
+  visitCount: number;
 }
 
 let allItems: SavedItem[] = [];
@@ -480,21 +481,52 @@ async function searchAndDisplay(query: string) {
   try {
     const historyResults = await chrome.history.search({
       text: query,
-      maxResults: 5,
+      maxResults: 50, // Get more results to deduplicate
       startTime: Date.now() - (30 * 24 * 60 * 60 * 1000) // Last 30 days
     });
     
     if (historyResults.length > 0) {
+      // Deduplicate by URL and count visits
+      const urlMap = new Map<string, {
+        item: chrome.history.HistoryItem;
+        count: number;
+        lastVisitTime: number;
+      }>();
+      
+      for (const item of historyResults) {
+        if (!item.url || !item.title) continue;
+        
+        const existing = urlMap.get(item.url);
+        if (existing) {
+          existing.count += item.visitCount || 1;
+          // Keep the most recent visit time
+          if (item.lastVisitTime && item.lastVisitTime > existing.lastVisitTime) {
+            existing.lastVisitTime = item.lastVisitTime;
+            existing.item = item; // Use the most recent item's data
+          }
+        } else {
+          urlMap.set(item.url, {
+            item,
+            count: item.visitCount || 1,
+            lastVisitTime: item.lastVisitTime || 0
+          });
+        }
+      }
+      
+      // Convert to array and sort by most recent, limit to 5 unique items
+      const uniqueHistory = Array.from(urlMap.values())
+        .sort((a, b) => b.lastVisitTime - a.lastVisitTime)
+        .slice(0, 5);
+      
       // Store history with most recent first (index 0 = most recent)
-      currentHistory = historyResults
-        .filter(item => item.url && item.title)
-        .map(item => ({
-          id: item.id || String(Date.now()),
-          title: item.title || item.url || '',
-          url: item.url || '',
-          domain: extractDomain(item.url || ''),
-          visitTime: item.lastVisitTime ? formatRelativeTime(item.lastVisitTime) : ''
-        }));
+      currentHistory = uniqueHistory.map(({ item, count, lastVisitTime }) => ({
+        id: item.id || String(Date.now()),
+        title: item.title || item.url || '',
+        url: item.url || '',
+        domain: extractDomain(item.url || ''),
+        visitTime: lastVisitTime ? formatRelativeTime(lastVisitTime) : '',
+        visitCount: count
+      }));
       
       // Display history reversed so most recent is at BOTTOM (closest to search box)
       // DOM order: oldest at top, most recent at bottom
@@ -561,6 +593,10 @@ async function searchAndDisplay(query: string) {
  * Generate history item HTML
  */
 function getHistoryHTML(item: HistoryItem, index: number): string {
+  const visitCountBadge = item.visitCount > 1 
+    ? `<span class="newtab-history-visits">${item.visitCount}×</span>` 
+    : '';
+  
   return `
     <div class="newtab-history-item" data-url="${escapeHtml(item.url)}" data-index="${index}" data-section="history">
       <div class="newtab-history-favicon">
@@ -571,6 +607,7 @@ function getHistoryHTML(item: HistoryItem, index: number): string {
         <div class="newtab-history-meta">
           <span class="newtab-history-domain">${escapeHtml(item.domain)}</span>
           ${item.visitTime ? `<span class="newtab-history-separator">•</span><span class="newtab-history-time">${item.visitTime}</span>` : ''}
+          ${visitCountBadge}
         </div>
       </div>
     </div>
