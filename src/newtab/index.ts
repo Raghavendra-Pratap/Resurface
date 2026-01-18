@@ -50,28 +50,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 /**
  * Update tray heights based on viewport size
+ * Note: Heights are now fixed in CSS, this function is kept for potential future use
  */
 function updateTrayHeights() {
-  const viewportHeight = window.innerHeight;
-  const searchBoxHeight = 80; // Approximate search box height
-  const logoHeight = 140; // Logo + spacing (top: 60px + logo ~80px)
-  const bottomSpace = 180; // Quick links + hints (no stats)
-  const trayGap = 60; // Gap between search box and trays (30px top + 30px bottom)
-  
-  // Calculate available space for trays (now that they're closer)
-  const availableSpace = viewportHeight - logoHeight - searchBoxHeight - bottomSpace - trayGap;
-  const maxTrayHeight = Math.max(200, Math.min(450, availableSpace / 2));
-  
-  const historyTray = document.getElementById('history-tray');
-  const resultsTray = document.getElementById('results-tray');
-  
-  if (historyTray) {
-    historyTray.style.maxHeight = `${maxTrayHeight}px`;
-  }
-  
-  if (resultsTray) {
-    resultsTray.style.maxHeight = `${maxTrayHeight}px`;
-  }
+  // Heights are now fixed in CSS (340px for history, 360px for results)
+  // No dynamic calculation needed
 }
 
 /**
