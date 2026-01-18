@@ -455,19 +455,35 @@ body {
   font-weight: 600;
 }
 
+/* Quick Links Container - Wide enough for 9 icons */
+.newtab-quick-links-container {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
+  margin-top: 32px;
+  margin-bottom: 24px;
+}
+
+.newtab-quick-links-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: calc(9 * 68px + 8 * 6px + 40px); /* 9 icons + 8 gaps + padding */
+  min-width: calc(9 * 68px + 8 * 6px + 40px);
+}
+
 /* Quick Links */
 .newtab-quick-links {
   display: flex !important;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 6px;
-  margin-top: 32px;
-  margin-bottom: 24px;
   flex-wrap: nowrap;
   overflow-x: auto;
   overflow-y: hidden;
   padding: 8px 0;
   width: 100%;
-  max-width: 100%;
   visibility: visible !important;
   opacity: 1 !important;
   position: relative;
@@ -508,6 +524,7 @@ body {
   color: var(--text-secondary);
   transition: all 0.2s ease;
   min-width: 68px;
+  width: 68px;
   flex-shrink: 0;
 }
 

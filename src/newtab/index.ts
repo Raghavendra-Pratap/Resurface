@@ -710,16 +710,19 @@ async function loadQuickShortcuts() {
   try {
     const settings = await sendToBackground('GET_SETTINGS');
     const quickLinksContainer = document.getElementById('quick-links');
+    const quickLinksWrapper = quickLinksContainer?.parentElement;
     
-    if (!quickLinksContainer) return;
+    if (!quickLinksContainer || !quickLinksWrapper) return;
     
     // Hide/show the container based on settings
     if (!settings.showQuickShortcuts) {
       quickLinksContainer.style.display = 'none';
+      quickLinksWrapper.style.display = 'none';
       return;
     }
     
     quickLinksContainer.style.display = 'flex';
+    quickLinksWrapper.style.display = 'flex';
     
     // Get enabled shortcuts
     const enabledShortcuts = settings.quickShortcuts.filter(s => s.enabled);
