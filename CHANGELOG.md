@@ -8,45 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2026-01-18
 
 ### Added
-- **Quick Shortcuts Management**: Complete control over quick shortcuts in dashboard settings
-  - Toggle to show/hide quick shortcuts section on new tab page
-  - Individual enable/disable toggles for each shortcut
-  - Add custom shortcuts with custom URLs and titles
-  - Delete custom shortcuts (default shortcuts cannot be deleted)
-- **Open Dashboard Button**: Quick access button in new tab hints bar
-  - Styled consistently with "Customize shortcuts" button
-  - Opens dashboard with one click
+- **Quick Shortcuts Management**: Full control over Google service shortcuts
+  - Enable/disable individual shortcuts
+  - Add custom shortcuts with any URL
+  - Toggle entire shortcuts section on/off
+  - Delete custom shortcuts
+- **Open Dashboard Button**: Quick access to dashboard from new tab page
+- **Responsive Design**: Settings modal and new tab page adapt to all screen sizes
+- **Pinned Sidebar Elements**: Resurface logo pinned at top, Settings pinned at bottom
+- **Center-Aligned Shortcuts**: Quick shortcuts properly centered with space for 9 icons
 
 ### Changed
-- **Dashboard Sidebar Layout**:
-  - Resurface logo now pinned at the top (sticky header)
-  - Settings button now pinned at the bottom (sticky footer)
-  - Navigation area scrolls independently between header and footer
-- **Quick Shortcuts Display**:
-  - Center-aligned shortcuts for better visual balance
-  - Container sized to accommodate 9 icons (680px width)
-  - Icons remain centered when count decreases
-  - Fixed icon width (68px) for consistent spacing
-  - Visible scrollbar for better UX when scrolling
-- **Settings Modal**:
-  - Made fully responsive for all screen sizes
-  - Scrollable content area with fixed header/footer
-  - Optimized for mobile and tablet devices
-- **New Tab Page**:
-  - Fully responsive design with breakpoints for tablet and mobile
-  - Quick shortcuts dynamically rendered based on user preferences
-  - Improved spacing and layout on smaller screens
+- Quick shortcuts now dynamically rendered based on user preferences
+- Settings modal is fully responsive and scrollable
+- Dashboard sidebar has improved layout with sticky header/footer
+- Quick shortcuts container maintains proper width for 9 icons
 
 ### Fixed
-- **CSP Violations**: Replaced all inline event handlers with proper event listeners
-  - All `onerror` handlers converted to addEventListener
-  - Fully compliant with Chrome's Content Security Policy
-- **Quick Shortcuts Overflow**: Fixed shortcuts being hidden beyond visible area
-  - Proper horizontal scrolling with visible scrollbar
-  - Container maintains minimum width for 9 icons
-- **Settings Modal Overflow**: Fixed settings page going beyond screen on smaller devices
-  - Responsive breakpoints for tablet (768px) and mobile (480px)
-  - Scrollable content prevents overflow
+- Content Security Policy violations (removed inline event handlers)
+- Quick shortcuts overflow issues - all shortcuts now accessible
+- Settings modal overflow on smaller screens
+- Sidebar scrolling issues with pinned elements
 
 ## [1.0.8] - 2026-01-18
 
