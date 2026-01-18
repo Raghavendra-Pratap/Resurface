@@ -192,6 +192,24 @@
           </label>
         </div>
 
+        <div class="settings-group">
+          <label class="settings-label">Quick Shortcuts</label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="setting-show-shortcuts" checked>
+            Show quick shortcuts on new tab page
+          </label>
+          <div id="shortcuts-list" style="margin-top: 16px;">
+            <!-- Shortcuts will be loaded here -->
+          </div>
+          <button class="btn btn-secondary" id="btn-add-custom-shortcut" style="margin-top: 12px;">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+              <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2"/>
+              <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Add Custom Shortcut
+          </button>
+        </div>
+
         <div class="settings-group settings-data">
           <label class="settings-label">Data Management</label>
           <p class="settings-hint">Export your data as a backup or import from a previous backup.</p>
