@@ -195,7 +195,7 @@ body {
 /* History Tray (above search) */
 .newtab-history-tray {
   position: absolute;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + 4px);
   left: 0;
   right: 0;
   background: var(--bg-card);
@@ -322,7 +322,7 @@ body {
 /* Results Tray (below search) */
 .newtab-results-tray {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 4px);
   left: 0;
   right: 0;
   background: var(--bg-card);
