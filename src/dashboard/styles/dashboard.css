@@ -620,8 +620,11 @@ body {
   border-radius: 16px;
   width: 480px;
   max-width: 90vw;
+  max-height: 90vh;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-header {
@@ -653,6 +656,9 @@ body {
 
 .modal-body {
   padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .modal-footer {
@@ -860,6 +866,122 @@ body {
 
 .settings-data-stats strong {
   color: var(--text-primary);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+/* Responsive Modal Styles */
+@media (max-width: 768px) {
+  .modal {
+    width: 95vw;
+    max-height: 95vh;
+    border-radius: 12px;
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .settings-group {
+    margin-bottom: 20px;
+  }
+
+  .shortcut-item {
+    padding: 10px;
+    flex-wrap: wrap;
+  }
+
+  .shortcut-item .checkbox-label {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .shortcut-item .checkbox-label span {
+    font-size: 13px;
+  }
+
+  .shortcut-item .checkbox-label span strong {
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .settings-data-actions {
+    flex-direction: column;
+  }
+
+  .settings-data-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+    max-width: 100vw;
+  }
+
+  .modal-header {
+    padding: 14px 16px;
+  }
+
+  .modal-body {
+    padding: 16px;
+  }
+
+  .settings-group {
+    margin-bottom: 16px;
+  }
+
+  .settings-label {
+    font-size: 12px;
+  }
+
+  .shortcut-item {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .shortcut-item .checkbox-label {
+    font-size: 13px;
+  }
+
+  .shortcut-item .checkbox-label span {
+    font-size: 12px;
+  }
+
+  .shortcut-delete {
+    padding: 4px;
+  }
+
+  .range-with-value {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  #auto-save-value {
+    text-align: center;
+  }
 }
 
 .settings-data-stats .stat-row {
