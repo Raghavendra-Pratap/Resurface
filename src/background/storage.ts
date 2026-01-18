@@ -211,19 +211,39 @@ async function migrateFromOldDatabase(): Promise<void> {
  */
 const DEFAULT_SAVED_PAGES = [
   {
+    url: 'https://gemini.google.com',
+    title: 'Gemini - AI Assistant by Google',
+    searchKeywords: 'gemini ai google assistant chatbot bard artificial intelligence'
+  },
+  {
     url: 'https://mail.google.com',
     title: 'Gmail - Email by Google',
     searchKeywords: 'gmail email mail google inbox messages compose send receive'
   },
   {
-    url: 'https://www.youtube.com',
-    title: 'YouTube - Video Platform',
-    searchKeywords: 'youtube videos watch streaming music tutorials entertainment'
-  },
-  {
     url: 'https://drive.google.com',
     title: 'Google Drive - Cloud Storage',
     searchKeywords: 'drive google storage files documents backup cloud sync'
+  },
+  {
+    url: 'https://docs.google.com',
+    title: 'Google Docs - Document Editor',
+    searchKeywords: 'docs google documents word editor write text typing'
+  },
+  {
+    url: 'https://sheets.google.com',
+    title: 'Google Sheets - Spreadsheets',
+    searchKeywords: 'sheets google spreadsheet excel tables data cells rows columns'
+  },
+  {
+    url: 'https://slides.google.com',
+    title: 'Google Slides - Presentations',
+    searchKeywords: 'slides google presentations powerpoint ppt deck slideshow'
+  },
+  {
+    url: 'https://www.youtube.com',
+    title: 'YouTube - Video Platform',
+    searchKeywords: 'youtube videos watch streaming music tutorials entertainment'
   },
   {
     url: 'https://maps.google.com',
@@ -239,16 +259,6 @@ const DEFAULT_SAVED_PAGES = [
     url: 'https://translate.google.com',
     title: 'Google Translate - Language Translation',
     searchKeywords: 'translate google translation language translator convert'
-  },
-  {
-    url: 'https://news.google.com',
-    title: 'Google News - Headlines & Stories',
-    searchKeywords: 'news google headlines articles current events world'
-  },
-  {
-    url: 'https://images.google.com',
-    title: 'Google Images - Image Search',
-    searchKeywords: 'images google photos pictures image search reverse'
   }
 ];
 

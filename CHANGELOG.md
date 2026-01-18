@@ -5,6 +5,17 @@ All notable changes to Resurface will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - 2026-01-18
+
+### Added
+- New quick links: Gemini, Docs, Sheets, Slides
+- These are also added as default saved pages for new users
+
+### Changed
+- Redesigned bottom bar with cleaner, theme-matching style
+- Bottom hints bar now blends seamlessly with the dark theme
+- Reorganized quick links order (Gemini first, productivity tools grouped)
+
 ## [1.0.6] - 2026-01-18
 
 ### Added
