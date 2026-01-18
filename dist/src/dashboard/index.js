@@ -1,10 +1,10 @@
 import{s as v}from"../../messages.js";function N(t){try{const{hostname:n}=new URL(t);return n.replace("www.","")}catch{return""}}function O(t){const n=Math.floor((Date.now()-t)/1e3);if(n<60)return"Just now";const e=Math.floor(n/60);if(e<60)return`${e}m ago`;const a=Math.floor(e/60);if(a<24)return`${a}h ago`;const i=Math.floor(a/24);if(i<7)return`${i}d ago`;const o=Math.floor(i/7);if(o<4)return`${o}w ago`;const r=Math.floor(i/30);return r<12?`${r}mo ago`:`${Math.floor(i/365)}y ago`}function f(t){const n=document.createElement("div");return n.textContent=t,n.innerHTML}const s={items:[],topics:[],intents:[],settings:null,currentFilter:"all",searchQuery:"",viewMode:"grid"};async function H(){await E(),h(),I(),q()}async function E(){try{s.items=await v("GET_ALL_ITEMS"),s.topics=await v("GET_ALL_TOPICS"),s.intents=await v("GET_ALL_INTENTS"),s.settings=await v("GET_SETTINGS"),R()}catch(t){console.error("Failed to load data:",t)}}function h(){document.getElementById("count-all").textContent=String(s.items.length);const t=new Date;t.setHours(0,0,0,0);const n=s.items.filter(i=>i.savedAt>=t.getTime()-7*24*60*60*1e3).length;document.getElementById("count-recent").textContent=String(n);const e=document.getElementById("topics-list");e.innerHTML=s.topics.map(i=>`
     <div class="nav-item-wrapper" data-topic-id="${i.id}">
-      <button class="nav-item" data-filter-type="topic" data-filter-id="${i.id}">
-        <span class="nav-color-dot" style="background: ${i.color};"></span>
-        <span>${f(i.name)}</span>
-        <span class="nav-count">${i.itemCount}</span>
-      </button>
+    <button class="nav-item" data-filter-type="topic" data-filter-id="${i.id}">
+      <span class="nav-color-dot" style="background: ${i.color};"></span>
+      <span>${f(i.name)}</span>
+      <span class="nav-count">${i.itemCount}</span>
+    </button>
       <div class="nav-item-actions">
         <button class="nav-action-btn edit" data-action="edit-topic" title="Edit">
           <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -16,11 +16,11 @@ import{s as v}from"../../messages.js";function N(t){try{const{hostname:n}=new UR
     </div>
   `).join("");const a=document.getElementById("intents-list");a.innerHTML=s.intents.map(i=>`
     <div class="nav-item-wrapper" data-intent-id="${i.id}">
-      <button class="nav-item" data-filter-type="intent" data-filter-id="${i.id}">
-        <span>${i.emoji}</span>
-        <span>${f(i.name)}</span>
-        <span class="nav-count">${i.itemCount}</span>
-      </button>
+    <button class="nav-item" data-filter-type="intent" data-filter-id="${i.id}">
+      <span>${i.emoji}</span>
+      <span>${f(i.name)}</span>
+      <span class="nav-count">${i.itemCount}</span>
+    </button>
       <div class="nav-item-actions">
         <button class="nav-action-btn edit" data-action="edit-intent" title="Edit">
           <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>

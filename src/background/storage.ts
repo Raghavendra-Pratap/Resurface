@@ -259,6 +259,16 @@ const DEFAULT_SAVED_PAGES = [
     url: 'https://translate.google.com',
     title: 'Google Translate - Language Translation',
     searchKeywords: 'translate google translation language translator convert'
+  },
+  {
+    url: 'https://www.google.com/imghp',
+    title: 'Google Images - Image Search',
+    searchKeywords: 'images google pictures photos search visual find images'
+  },
+  {
+    url: 'https://news.google.com',
+    title: 'Google News - Latest Headlines',
+    searchKeywords: 'news google headlines articles current events breaking news stories'
   }
 ];
 
