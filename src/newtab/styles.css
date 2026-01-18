@@ -183,7 +183,7 @@ body {
 /* History Tray (above search) */
 .newtab-history-tray {
   position: absolute;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + 12px); /* Increased spacing from search box */
   left: 0;
   right: 0;
   background: var(--bg-card);
@@ -196,8 +196,7 @@ body {
   pointer-events: none;
   transition: opacity 0.2s, transform 0.2s;
   z-index: 15; /* Below search box but above other content */
-  max-height: 400px; /* Limit height to prevent overlap */
-  margin-bottom: -60px; /* Allow overlap with logo */
+  max-height: 350px; /* Limit height to ensure no overlap with search box */
 }
 
 .newtab-history-tray.visible {
